@@ -60,4 +60,11 @@ class Service extends Model
     public function subcategory() {
         return $this->belongsTo(Subcategory::class, 'subcategory_id');
     }
+
+    public function weddings()
+    {
+        return $this->belongsToMany(Wedding::class, 'wedding_service')
+            ->withPivot(['price', 'quantity', 'notes', 'status'])
+            ->withTimestamps();
+    }
 }

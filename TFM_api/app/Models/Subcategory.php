@@ -37,5 +37,3 @@ class Subcategory extends Model
         return $this->hasMany(Service::class, 'subcategory_id');
     }
 }
-
- 
