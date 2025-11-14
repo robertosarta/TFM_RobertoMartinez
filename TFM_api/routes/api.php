@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\ServiceApiController;
 use App\Http\Controllers\Api\SubcategoryApiController;
+use App\Http\Controllers\Api\WeddingApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']); //LOGIN PUBLICO
@@ -28,6 +29,14 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('services', ServiceApiController::class)->only(['store', 'update', 'destroy']);
     //CRUD SUBCATEGORIAS
     Route::apiResource('subcategories', SubcategoryApiController::class)->only(['store', 'update', 'destroy']);
+    //CRUD WEDDINGS
+    Route::apiResource('weddings', WeddingApiController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+
+    //SERVICIOS DE UNA BODA
+    Route::get('/weddings/{wedding}/services', [WeddingApiController::class, 'services']);
+    Route::post('/weddings/{wedding}/services', [WeddingApiController::class, 'attachService']);
+    Route::put('/weddings/{wedding}/services/{service}', [WeddingApiController::class, 'updateService']);
+    Route::delete('/weddings/{wedding}/services/{service}', [WeddingApiController::class, 'detachService']);
 });
 
 
