@@ -92,7 +92,14 @@ class ReviewApiController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Validation failed or You have already reviewed this service"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 nullable=true,
+     *                 example={
+     *                     "rating": {"The rating field is required."}
+     *                 }
+     *             )
      *         )
      *     ),
      *     security={{"sanctum": {}}}
@@ -202,7 +209,14 @@ class ReviewApiController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="No data provided or invalid JSON"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 nullable=true,
+     *                 example={
+     *                     "rating": {"The rating field must be an integer."}
+     *                 }
+     *             )
      *         )
      *     ),
      *     @OA\Response(

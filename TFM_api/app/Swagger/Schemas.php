@@ -101,18 +101,5 @@ namespace App\Swagger;
  *         )
  *     }
  * )
- *
- * @OA\Schema(
- *     schema="ReviewBasic",
- *     title="ReviewBasic",
- *     description="Review fields without relations",
- *     type="object",
- *     required={"id", "user_id", "service_id", "rating"},
- *     @OA\Property(property="id", type="integer", example=5),
- *     @OA\Property(property="user_id", type="integer", example=2),
- *     @OA\Property(property="service_id", type="integer", example=10),
- *     @OA\Property(property="rating", type="integer", minimum=1, maximum=5, example=5),
- *     @OA\Property(property="comment", type="string", nullable=true, example="Servicio excelente")
- * )
  */
 class Schemas {}

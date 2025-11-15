@@ -80,7 +80,14 @@ class WeddingApiController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Validation failed"),
-     *             @OA\Property(property="errors", type="object")
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 example={
+     *                     "name": {"The name field is required."},
+     *                     "guest_count": {"The guest count must be at least 0."}
+     *                 }
+     *             )
      *         )
      *     ),
      *     security={{"sanctum": {}}}
@@ -209,7 +216,14 @@ class WeddingApiController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="No data provided or invalid JSON"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 nullable=true,
+     *                 example={
+     *                     "name": {"The name field must be a string."}
+     *                 }
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -541,7 +555,14 @@ class WeddingApiController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="No data provided or invalid JSON"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 nullable=true,
+     *                 example={
+     *                     "price": {"The price field must be a number."}
+     *                 }
+     *             )
      *         )
      *     ),
      *     @OA\Response(
