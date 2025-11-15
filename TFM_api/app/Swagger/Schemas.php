@@ -57,6 +57,62 @@ namespace App\Swagger;
  *     @OA\Property(property="user_id", type="integer", example=2),
  *     @OA\Property(property="subcategory_id", type="integer", example=5)
  * )
+ *
+ * @OA\Schema(
+ *     schema="WeddingBasic",
+ *     title="WeddingBasic",
+ *     description="Wedding fields without relations",
+ *     type="object",
+ *     required={"id", "user_id", "name"},
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="user_id", type="integer", example=2),
+ *     @OA\Property(property="name", type="string", example="Boda de Marta y Luis"),
+ *     @OA\Property(property="wedding_date", type="string", format="date", example="2025-06-15"),
+ *     @OA\Property(property="location", type="string", example="Madrid"),
+ *     @OA\Property(property="notes", type="string", example="Ceremonia al aire libre"),
+ *     @OA\Property(property="budget", type="string", example="15000.00"),
+ *     @OA\Property(property="guest_count", type="integer", example=120),
+ *     @OA\Property(property="status", type="string", example="draft")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="WeddingServicePivot",
+ *     title="WeddingServicePivot",
+ *     description="Pivot data for a service attached to a wedding",
+ *     type="object",
+ *     @OA\Property(property="wedding_id", type="integer", example=1),
+ *     @OA\Property(property="service_id", type="integer", example=10),
+ *     @OA\Property(property="price", type="string", nullable=true, example="1000.00"),
+ *     @OA\Property(property="quantity", type="integer", example=1),
+ *     @OA\Property(property="notes", type="string", nullable=true, example="Pago por horas"),
+ *     @OA\Property(property="status", type="string", example="pending")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="WeddingService",
+ *     title="WeddingService",
+ *     description="Service attached to a wedding with pivot data",
+ *     type="object",
+ *     allOf={
+ *         @OA\Schema(ref="#/components/schemas/ServiceBasic"),
+ *         @OA\Schema(
+ *             type="object",
+ *             @OA\Property(property="pivot", ref="#/components/schemas/WeddingServicePivot")
+ *         )
+ *     }
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ReviewBasic",
+ *     title="ReviewBasic",
+ *     description="Review fields without relations",
+ *     type="object",
+ *     required={"id", "user_id", "service_id", "rating"},
+ *     @OA\Property(property="id", type="integer", example=5),
+ *     @OA\Property(property="user_id", type="integer", example=2),
+ *     @OA\Property(property="service_id", type="integer", example=10),
+ *     @OA\Property(property="rating", type="integer", minimum=1, maximum=5, example=5),
+ *     @OA\Property(property="comment", type="string", nullable=true, example="Servicio excelente")
+ * )
  */
 class Schemas {}
-

@@ -79,4 +79,8 @@ class User extends Authenticatable
     public function weddings() {
         return $this->hasMany(Wedding::class, 'user_id');
     }
+
+    public function reviews() {
+        return $this->hasMany(Review::class, 'user_id');
+    }
 }

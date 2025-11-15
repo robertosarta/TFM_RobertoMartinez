@@ -67,4 +67,8 @@ class Service extends Model
             ->withPivot(['price', 'quantity', 'notes', 'status'])
             ->withTimestamps();
     }
+
+    public function reviews() {
+        return $this->hasMany(Review::class, 'service_id');
+    }
 }

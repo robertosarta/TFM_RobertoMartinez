@@ -11,10 +11,26 @@ use Illuminate\Support\Facades\Auth;
 class WeddingApiController extends Controller
 {
     /**
-     * Display a listing of weddings.
-     *
-     * - Admin: sees all weddings.
-     * - Normal user: sees only their own weddings.
+     * @OA\Get(
+     *     path="/weddings",
+     *     summary="List weddings for current user or all (admin)",
+     *     tags={"Weddings"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/WeddingBasic")
+     *             )
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function index()
     {
@@ -30,7 +46,45 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Store a newly created wedding for the authenticated user.
+     * @OA\Post(
+     *     path="/weddings",
+     *     summary="Create a new wedding for the authenticated user",
+     *     tags={"Weddings"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="wedding_date", type="string", format="date"),
+     *             @OA\Property(property="location", type="string"),
+     *             @OA\Property(property="notes", type="string"),
+     *             @OA\Property(property="budget", type="number", format="float"),
+     *             @OA\Property(property="guest_count", type="integer"),
+     *             @OA\Property(property="status", type="string", enum={"draft","confirmed","cancelled","archived"})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Wedding created successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/WeddingBasic")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function store(Request $request)
     {
@@ -56,7 +110,47 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Display the specified wedding.
+     * @OA\Get(
+     *     path="/weddings/{id}",
+     *     summary="Get a single wedding",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Wedding")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function show(int $id)
     {
@@ -76,7 +170,68 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Update the specified wedding.
+     * @OA\Put(
+     *     path="/weddings/{id}",
+     *     summary="Update a wedding (owner or admin)",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="wedding_date", type="string", format="date"),
+     *             @OA\Property(property="location", type="string"),
+     *             @OA\Property(property="notes", type="string"),
+     *             @OA\Property(property="budget", type="number", format="float"),
+     *             @OA\Property(property="guest_count", type="integer"),
+     *             @OA\Property(property="status", type="string", enum={"draft","confirmed","cancelled","archived"})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Wedding updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/WeddingBasic")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed or empty payload",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No data provided or invalid JSON"),
+     *             @OA\Property(property="errors", type="object", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function update(Request $request, int $id)
     {
@@ -112,7 +267,47 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Remove the specified wedding from storage.
+     * @OA\Delete(
+     *     path="/weddings/{id}",
+     *     summary="Delete a wedding (owner or admin)",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Wedding deleted successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function destroy(int $id)
     {
@@ -134,7 +329,51 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * List services attached to a wedding.
+     * @OA\Get(
+     *     path="/weddings/{wedding}/services",
+     *     summary="List services attached to a wedding",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="wedding",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/WeddingService")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function services(int $id)
     {
@@ -154,7 +393,68 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Attach a service to a wedding with optional pivot data.
+     * @OA\Post(
+     *     path="/weddings/{wedding}/services",
+     *     summary="Attach a service to a wedding",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="wedding",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"service_id"},
+     *             @OA\Property(property="service_id", type="integer"),
+     *             @OA\Property(property="price", type="number", format="float", nullable=true),
+     *             @OA\Property(property="quantity", type="integer", nullable=true),
+     *             @OA\Property(property="notes", type="string", nullable=true),
+     *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}, nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service attached to wedding successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ServiceBasic")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function attachService(Request $request, int $id)
     {
@@ -198,7 +498,72 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Update pivot data for a service in a wedding.
+     * @OA\Put(
+     *     path="/weddings/{wedding}/services/{service}",
+     *     summary="Update pivot data for a service in a wedding",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="wedding",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="price", type="number", format="float", nullable=true),
+     *             @OA\Property(property="quantity", type="integer", nullable=true),
+     *             @OA\Property(property="notes", type="string", nullable=true),
+     *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}, nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Wedding service updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ServiceBasic")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed or empty payload",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No data provided or invalid JSON"),
+     *             @OA\Property(property="errors", type="object", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding or service not found / not attached",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found or Service not attached to wedding")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function updateService(Request $request, int $id, int $serviceId)
     {
@@ -246,7 +611,54 @@ class WeddingApiController extends Controller
     }
 
     /**
-     * Detach a service from a wedding.
+     * @OA\Delete(
+     *     path="/weddings/{wedding}/services/{service}",
+     *     summary="Detach a service from a wedding",
+     *     tags={"Weddings"},
+     *     @OA\Parameter(
+     *         name="wedding",
+     *         in="path",
+     *         description="Wedding ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Service detached from wedding successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Wedding not found or service not attached",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Wedding not found or Service not attached to wedding")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
      */
     public function detachService(int $id, int $serviceId)
     {

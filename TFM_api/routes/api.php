@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\ServiceApiController;
 use App\Http\Controllers\Api\SubcategoryApiController;
 use App\Http\Controllers\Api\WeddingApiController;
+use App\Http\Controllers\Api\ReviewApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']); //LOGIN PUBLICO
@@ -16,6 +17,8 @@ Route::get('/services', [ServiceApiController::class, 'index']);//INDICE SERVICI
 Route::get('/services/{id}', [ServiceApiController::class, 'show']);//VER SERVICIO PUBLICO
 Route::get('/subcategories', [SubcategoryApiController::class, 'index']);//INDICE SUBCATEGORIAS PUBLICO
 Route::get('/subcategories/{id}', [SubcategoryApiController::class, 'show']);//VER SUBCATEGORIAS PUBLICO
+Route::get('/reviews', [ReviewApiController::class, 'index']);//INDICE REVIEWS PUBLICO
+Route::get('/reviews/{id}', [ReviewApiController::class, 'show']);//VER REVIEW PUBLICO
 
 
 Route::middleware('auth:sanctum')->group(function() {
@@ -29,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('services', ServiceApiController::class)->only(['store', 'update', 'destroy']);
     //CRUD SUBCATEGORIAS
     Route::apiResource('subcategories', SubcategoryApiController::class)->only(['store', 'update', 'destroy']);
+    //CRUD REVIEWS
+    Route::apiResource('reviews', ReviewApiController::class)->only(['store', 'update', 'destroy']);
     //CRUD WEDDINGS
     Route::apiResource('weddings', WeddingApiController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
