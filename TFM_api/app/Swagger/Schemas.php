@@ -78,11 +78,11 @@ namespace App\Swagger;
  * @OA\Schema(
  *     schema="WeddingServicePivot",
  *     title="WeddingServicePivot",
- *     description="Pivot data for a service attached to a wedding",
+ *     description="Pivot data for a service attached to a wedding (unit price and quantity)",
  *     type="object",
  *     @OA\Property(property="wedding_id", type="integer", example=1),
  *     @OA\Property(property="service_id", type="integer", example=10),
- *     @OA\Property(property="price", type="string", nullable=true, example="1000.00"),
+ *     @OA\Property(property="price", type="string", nullable=true, example="1000.00", description="Unit price agreed for this wedding"),
  *     @OA\Property(property="quantity", type="integer", example=1),
  *     @OA\Property(property="notes", type="string", nullable=true, example="Pago por horas"),
  *     @OA\Property(property="status", type="string", example="pending")

@@ -161,7 +161,7 @@ class WeddingApiController extends Controller
      */
     public function show(int $id)
     {
-        $wedding = Wedding::with('services')->find($id);
+        $wedding = Wedding::with(['services', 'user'])->find($id);
 
         if (!$wedding) {
             return $this->error('Wedding not found', 404);
@@ -409,7 +409,7 @@ class WeddingApiController extends Controller
     /**
      * @OA\Post(
      *     path="/weddings/{wedding}/services",
-     *     summary="Attach a service to a wedding",
+     *     summary="Attach a service to a wedding (uses service unit price by default)",
      *     tags={"Weddings"},
      *     @OA\Parameter(
      *         name="wedding",
@@ -423,7 +423,7 @@ class WeddingApiController extends Controller
      *         @OA\JsonContent(
      *             required={"service_id"},
      *             @OA\Property(property="service_id", type="integer"),
-     *             @OA\Property(property="price", type="number", format="float", nullable=true),
+     *             @OA\Property(property="price", type="number", format="float", nullable=true, description="Unit price agreed for this wedding; if omitted, the current service price is used"),
      *             @OA\Property(property="quantity", type="integer", nullable=true),
      *             @OA\Property(property="notes", type="string", nullable=true),
      *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}, nullable=true)
@@ -472,6 +472,14 @@ class WeddingApiController extends Controller
      */
     public function attachService(Request $request, int $id)
     {
+        $data = $request->validate([
+            'service_id' => 'required|integer|exists:services,id',
+            'price' => 'nullable|numeric',
+            'quantity' => 'nullable|integer|min:1',
+            'notes' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,confirmed,cancelled',
+        ]);
+
         $wedding = Wedding::find($id);
 
         if (!$wedding) {
@@ -484,18 +492,12 @@ class WeddingApiController extends Controller
             return $this->error('Forbidden', 403);
         }
 
-        $data = $request->validate([
-            'service_id' => 'required|integer|exists:services,id',
-            'price' => 'nullable|numeric',
-            'quantity' => 'nullable|integer|min:1',
-            'notes' => 'nullable|string',
-            'status' => 'nullable|string|in:pending,confirmed,cancelled',
-        ]);
-
         $serviceId = $data['service_id'];
+        $service = Service::find($serviceId);
 
         $pivotData = [
-            'price' => $data['price'] ?? null,
+            // If price is not provided, use the current service price
+            'price' => $data['price'] ?? ($service ? $service->price : null),
             'quantity' => $data['quantity'] ?? 1,
             'notes' => $data['notes'] ?? null,
             'status' => $data['status'] ?? 'pending',
