@@ -34,5 +34,15 @@ class UserSeeder extends Seeder
             'address' => 'Avenida Central 45',
             'role' => 'cliente',
         ]);
+
+        User::create([
+            'name' => 'Empresa Demo',
+            'email' => 'business@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('business123'),
+            'phone' => '600445566',
+            'address' => 'Calle Empresa 1',
+            'role' => 'business',
+        ]);
     }
 }

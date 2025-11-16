@@ -20,6 +20,9 @@ class ServiceFactory extends Factory
      */
     public function definition(): array
     {
+        $businessUser = User::where('role', 'business')->inRandomOrder()->first()
+            ?? User::inRandomOrder()->first();
+
         return [
             'name' => $this->faker->company(),
             'email' => $this->faker->unique()->companyEmail(),
@@ -31,7 +34,7 @@ class ServiceFactory extends Factory
             ],
             'description' => $this->faker->sentence(10),
             'price' => $this->faker->randomFloat(2, 10, 500),
-            'user_id' => User::inRandomOrder()->first()->id,
+            'user_id' => $businessUser ? $businessUser->id : null,
             'subcategory_id' => Subcategory::inRandomOrder()->first()->id,
         ];
     }

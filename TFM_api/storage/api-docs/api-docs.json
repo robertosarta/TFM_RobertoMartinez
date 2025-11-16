@@ -897,7 +897,7 @@
                 "tags": [
                     "Services"
                 ],
-                "summary": "Create a new service (auth required)",
+                "summary": "Create a new service (business or admin)",
                 "operationId": "ed38e15a00a693a49e8dcae1ef352740",
                 "requestBody": {
                     "required": true,
@@ -1764,7 +1764,8 @@
                                         "type": "string",
                                         "enum": [
                                             "admin",
-                                            "user"
+                                            "user",
+                                            "business"
                                         ]
                                     }
                                 },
@@ -1917,7 +1918,8 @@
                                         "type": "string",
                                         "enum": [
                                             "admin",
-                                            "user"
+                                            "user",
+                                            "business"
                                         ]
                                     }
                                 },

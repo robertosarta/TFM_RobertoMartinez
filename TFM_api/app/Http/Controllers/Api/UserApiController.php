@@ -63,9 +63,9 @@ class UserApiController extends Controller
      *             @OA\Property(property="email", type="string"),
      *             @OA\Property(property="password", type="string"),
      *             @OA\Property(property="password_confirmation", type="string"),
-     *             @OA\Property(property="phone", type="string"),
-     *             @OA\Property(property="address", type="string"),
-     *             @OA\Property(property="role", type="string", enum={"admin","user"})
+ *             @OA\Property(property="phone", type="string"),
+ *             @OA\Property(property="address", type="string"),
+ *             @OA\Property(property="role", type="string", enum={"admin","user","business"})
      *         )
      *     ),
      *     @OA\Response(
@@ -93,7 +93,7 @@ class UserApiController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string',
             'address' => 'nullable|string|max:255',
-            'role' => 'required|in:admin,user'
+            'role' => 'required|in:admin,user,business'
         ]);
 
         $data['password'] = Hash::make($data['password']);
@@ -168,7 +168,7 @@ class UserApiController extends Controller
      *         @OA\Property(property="password_confirmation", type="string"),
      *         @OA\Property(property="phone", type="string"),
      *         @OA\Property(property="address", type="string"),
-     *         @OA\Property(property="role", type="string", enum={"admin","user"})
+     *         @OA\Property(property="role", type="string", enum={"admin","user","business"})
      *     )),
      *     @OA\Response(
      *         response=200,
@@ -227,7 +227,7 @@ class UserApiController extends Controller
             'password' => 'sometimes|string|min:8|confirmed',
             'phone' => 'nullable|string',
             'address' => 'nullable|string|max:255',
-            'role' => 'sometimes|in:admin,user',
+            'role' => 'sometimes|in:admin,user,business',
         ]);
 
         // Rechazar payload vacío o JSON inválido (sin campos actualizables)

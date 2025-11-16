@@ -40,7 +40,7 @@ class ServiceApiController extends Controller
     /**
      * @OA\Post(
      *     path="/services",
-     *     summary="Create a new service (auth required)",
+     *     summary="Create a new service (business or admin)",
      *     tags={"Services"},
      *     @OA\RequestBody(
      *         required=true,
@@ -89,6 +89,10 @@ class ServiceApiController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Gate::allows('is-admin') && !Gate::allows('is-business')) {
+            return $this->error('Forbidden', 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
@@ -227,8 +231,8 @@ class ServiceApiController extends Controller
             return $this->error('Service not found', 404);
         }
         
-        // Verificamos que el usuario autenticado es el propietario del servicio o un admin
-        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $service)) {
+        // Verificamos que el usuario autenticado es el propietario del servicio y business, o un admin
+        if (!Gate::allows('is-admin') && (!Gate::allows('is-business') || !Gate::allows('owns-model', $service))) {
             return $this->error('Forbidden', 403);
         }
         
@@ -306,7 +310,7 @@ class ServiceApiController extends Controller
             return $this->error('Service not found', 404);
         }
 
-        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $service)) {
+        if (!Gate::allows('is-admin') && (!Gate::allows('is-business') || !Gate::allows('owns-model', $service))) {
             return $this->error('Forbidden', 403);
         }
 
