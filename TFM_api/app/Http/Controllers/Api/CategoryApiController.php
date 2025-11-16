@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryApiController extends Controller
 {
@@ -72,9 +73,7 @@ class CategoryApiController extends Controller
      */
     public function store(Request $request) 
     {
-        $user = Auth::user();
-
-        if ($user->role !== 'admin') {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
 
@@ -139,9 +138,7 @@ class CategoryApiController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $user = Auth::user();
-
-        if ($user->role !== 'admin') {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
 
@@ -203,9 +200,7 @@ class CategoryApiController extends Controller
      */
     public function destroy(int $id)
     {
-        $user = Auth::user();
-
-        if ($user->role !== 'admin') {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
         
