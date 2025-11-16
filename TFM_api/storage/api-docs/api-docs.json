@@ -2679,7 +2679,7 @@
                 "tags": [
                     "Weddings"
                 ],
-                "summary": "Attach a service to a wedding",
+                "summary": "Attach a service to a wedding (uses service unit price by default)",
                 "operationId": "12b979ac89f6588fd05a44966cb2921a",
                 "parameters": [
                     {
@@ -2705,6 +2705,7 @@
                                         "type": "integer"
                                     },
                                     "price": {
+                                        "description": "Unit price agreed for this wedding; if omitted, the current service price is used",
                                         "type": "number",
                                         "format": "float",
                                         "nullable": true
@@ -3526,7 +3527,7 @@
             },
             "WeddingServicePivot": {
                 "title": "WeddingServicePivot",
-                "description": "Pivot data for a service attached to a wedding",
+                "description": "Pivot data for a service attached to a wedding (unit price and quantity)",
                 "properties": {
                     "wedding_id": {
                         "type": "integer",
@@ -3537,6 +3538,7 @@
                         "example": 10
                     },
                     "price": {
+                        "description": "Unit price agreed for this wedding",
                         "type": "string",
                         "example": "1000.00",
                         "nullable": true

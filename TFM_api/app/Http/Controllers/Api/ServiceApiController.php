@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ServiceApiController extends Controller
 {
@@ -227,8 +228,7 @@ class ServiceApiController extends Controller
         }
         
         // Verificamos que el usuario autenticado es el propietario del servicio o un admin
-        $user = Auth::user();
-        if ($service->user_id !== $user->id && $user->role !== 'admin') {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $service)) {
             return $this->error('Forbidden', 403);
         }
         
@@ -306,9 +306,7 @@ class ServiceApiController extends Controller
             return $this->error('Service not found', 404);
         }
 
-        $user = Auth::user();
-
-        if($service->user_id !== $user->id && $user->role !== 'admin') {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $service)) {
             return $this->error('Forbidden', 403);
         }
 

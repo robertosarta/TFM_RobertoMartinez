@@ -43,7 +43,7 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        if (!Gate::allows('users-show')) {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
         $users = User::all();
@@ -83,7 +83,7 @@ class UserApiController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Gate::allows('users-create')) {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
         
@@ -213,7 +213,7 @@ class UserApiController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        if (!Gate::allows('users-update')) {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
 
@@ -288,7 +288,7 @@ class UserApiController extends Controller
      */
     public function destroy(int $id)
     {
-        if (!Gate::allows('users-delete')) {
+        if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
         $user = User::find($id);

@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\Wedding;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class WeddingApiController extends Controller
 {
@@ -167,9 +168,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -255,9 +254,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -331,9 +328,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -397,9 +392,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -472,6 +465,16 @@ class WeddingApiController extends Controller
      */
     public function attachService(Request $request, int $id)
     {
+        $wedding = Wedding::find($id);
+
+        if (!$wedding) {
+            return $this->error('Wedding not found', 404);
+        }
+
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
+            return $this->error('Forbidden', 403);
+        }
+
         $data = $request->validate([
             'service_id' => 'required|integer|exists:services,id',
             'price' => 'nullable|numeric',
@@ -479,18 +482,6 @@ class WeddingApiController extends Controller
             'notes' => 'nullable|string',
             'status' => 'nullable|string|in:pending,confirmed,cancelled',
         ]);
-
-        $wedding = Wedding::find($id);
-
-        if (!$wedding) {
-            return $this->error('Wedding not found', 404);
-        }
-
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
-            return $this->error('Forbidden', 403);
-        }
 
         $serviceId = $data['service_id'];
         $service = Service::find($serviceId);
@@ -596,9 +587,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -691,9 +680,7 @@ class WeddingApiController extends Controller
             return $this->error('Wedding not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($user->role !== 'admin' && $wedding->user_id !== $user->id) {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $wedding)) {
             return $this->error('Forbidden', 403);
         }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ReviewApiController extends Controller
 {
@@ -248,9 +249,7 @@ class ReviewApiController extends Controller
             return $this->error('Review not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($review->user_id !== $user->id && $user->role !== 'admin') {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $review)) {
             return $this->error('Forbidden', 403);
         }
 
@@ -319,9 +318,7 @@ class ReviewApiController extends Controller
             return $this->error('Review not found', 404);
         }
 
-        $user = Auth::user();
-
-        if ($review->user_id !== $user->id && $user->role !== 'admin') {
+        if (!Gate::allows('is-admin') && !Gate::allows('owns-model', $review)) {
             return $this->error('Forbidden', 403);
         }
 
