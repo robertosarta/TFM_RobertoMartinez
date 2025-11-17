@@ -35,11 +35,10 @@ class WeddingApiController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
+        if (Gate::allows('is-admin')) {
             $weddings = Wedding::with('user')->get();
         } else {
+            $user = Auth::user();
             $weddings = Wedding::where('user_id', $user->id)->get();
         }
 

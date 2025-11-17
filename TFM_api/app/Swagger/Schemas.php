@@ -83,7 +83,7 @@ namespace App\Swagger;
  *     @OA\Property(property="wedding_id", type="integer", example=1),
  *     @OA\Property(property="service_id", type="integer", example=10),
  *     @OA\Property(property="price", type="string", nullable=true, example="1000.00", description="Unit price agreed for this wedding"),
- *     @OA\Property(property="quantity", type="integer", example=1),
+ *     @OA\Property(property="quantity", type="integer", nullable=true, example=1),
  *     @OA\Property(property="notes", type="string", nullable=true, example="Pago por horas"),
  *     @OA\Property(property="status", type="string", example="pending")
  * )
