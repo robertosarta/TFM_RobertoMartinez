@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Models\ServiceImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceApiController extends Controller
 {
@@ -204,7 +205,8 @@ class ServiceApiController extends Controller
             'image' => 'nullable|image|max:5120', // max 5MB
             'url' => 'nullable|string|max:2048',
             'caption' => 'nullable|string|max:255',
-            'is_primary' => 'nullable|boolean',
+            // Accept common boolean representations (true/false, 1/0, on/off)
+            'is_primary' => 'nullable|in:true,false,1,0,on,off',
             'sort_order' => 'nullable|integer',
         ]);
 
@@ -220,14 +222,18 @@ class ServiceApiController extends Controller
             $url = $data['url'];
         }
 
-        if (!empty($data['is_primary'])) {
+        $isPrimary = isset($data['is_primary'])
+            ? filter_var($data['is_primary'], FILTER_VALIDATE_BOOLEAN)
+            : false;
+
+        if ($isPrimary) {
             $service->images()->update(['is_primary' => false]);
         }
 
         $image = $service->images()->create([
             'url' => $url,
             'caption' => $data['caption'] ?? null,
-            'is_primary' => $data['is_primary'] ?? false,
+            'is_primary' => $isPrimary,
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
 
@@ -581,6 +587,15 @@ class ServiceApiController extends Controller
 
         if (!$image) {
             return $this->error('Service not found or Image not found for this service', 404);
+        }
+
+        // Intentamos borrar también el fichero físico si es una URL local de /storage
+        if ($image->url) {
+            $path = parse_url($image->url, PHP_URL_PATH); // ej: /storage/services/xxxx.jpg
+            if ($path && strpos($path, '/storage/') === 0) {
+                $relativePath = substr($path, strlen('/storage/')); // ej: services/xxxx.jpg
+                Storage::disk('public')->delete($relativePath);
+            }
         }
 
         $image->delete();
