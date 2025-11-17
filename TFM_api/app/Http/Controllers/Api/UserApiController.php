@@ -13,8 +13,22 @@ class UserApiController extends Controller
     /**
      * @OA\Get(
      *     path="/users",
-     *     summary="List all users (admin only)",
+     *     summary="List all users (admin only, paginated)",
      *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (max 50)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -24,8 +38,16 @@ class UserApiController extends Controller
      *             @OA\Property(property="message", type="string"),
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/User")
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/User")
+     *                 ),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer")
      *             )
      *         )
      *     ),
@@ -41,12 +63,13 @@ class UserApiController extends Controller
      *     security={{"sanctum": {}}}
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!Gate::allows('is-admin')) {
             return $this->error('Forbidden', 403);
         }
-        $users = User::all();
+        $perPage = min((int) $request->query('per_page', 15), 50);
+        $users = User::paginate($perPage);
         return $this->success($users);
     }
 

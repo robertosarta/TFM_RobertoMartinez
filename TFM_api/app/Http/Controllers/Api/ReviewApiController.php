@@ -13,7 +13,7 @@ class ReviewApiController extends Controller
     /**
      * @OA\Get(
      *     path="/reviews",
-     *     summary="List reviews (optionally filtered by service or user)",
+     *     summary="List reviews (optionally filtered by service or user, paginated)",
      *     tags={"Reviews"},
      *     @OA\Parameter(
      *         name="service_id",
@@ -29,6 +29,20 @@ class ReviewApiController extends Controller
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (max 50)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -38,8 +52,16 @@ class ReviewApiController extends Controller
      *             @OA\Property(property="message", type="string"),
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Review")
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/Review")
+     *                 ),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer")
      *             )
      *         )
      *     )
@@ -57,7 +79,8 @@ class ReviewApiController extends Controller
             $query->where('user_id', $userId);
         }
 
-        $reviews = $query->get();
+        $perPage = min((int) $request->query('per_page', 15), 50);
+        $reviews = $query->paginate($perPage);
 
         return $this->success($reviews);
     }
