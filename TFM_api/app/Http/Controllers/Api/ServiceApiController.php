@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\ServiceImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -58,6 +59,179 @@ class ServiceApiController extends Controller
         $perPage = min((int) $request->query('per_page', 15), 50);
         $services = Service::paginate($perPage);
         return $this->success($services, 200);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/services/{id}/images",
+     *     summary="List images for a service",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ServiceImageBasic")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Service not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Service not found")
+     *         )
+     *     )
+     * )
+     */
+    public function images(int $id)
+    {
+        $service = Service::find($id);
+
+        if (!$service) {
+            return $this->error('Service not found', 404);
+        }
+
+        $images = $service->images()->orderBy('sort_order')->get();
+
+        return $this->success($images);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/services/{id}/images",
+     *     summary="Add an image to a service (business owner or admin)",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"image"},
+     *                 @OA\Property(
+     *                     property="image",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Image file to upload"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="url",
+     *                     type="string",
+     *                     nullable=true,
+     *                     description="Optional existing URL instead of uploading a file"
+     *                 ),
+     *                 @OA\Property(property="caption", type="string", nullable=true),
+     *                 @OA\Property(property="is_primary", type="boolean", nullable=true),
+     *                 @OA\Property(property="sort_order", type="integer", nullable=true)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Image added successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ServiceImageBasic")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Service not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Service not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
+     */
+    public function addImage(Request $request, int $id)
+    {
+        $service = Service::find($id);
+
+        if (!$service) {
+            return $this->error('Service not found', 404);
+        }
+
+        if (!Gate::allows('is-admin') && (!Gate::allows('is-business') || !Gate::allows('owns-model', $service))) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $data = $request->validate([
+            'image' => 'nullable|image|max:5120', // max 5MB
+            'url' => 'nullable|string|max:2048',
+            'caption' => 'nullable|string|max:255',
+            'is_primary' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer',
+        ]);
+
+        if (!$request->hasFile('image') && empty($data['url'])) {
+            return $this->error('Either image file or url is required', 422);
+        }
+
+        if ($request->hasFile('image')) {
+            // Store in storage/app/public/services and expose via /storage/services/...
+            $path = $request->file('image')->store('services', 'public');
+            $url = asset('storage/' . $path);
+        } else {
+            $url = $data['url'];
+        }
+
+        if (!empty($data['is_primary'])) {
+            $service->images()->update(['is_primary' => false]);
+        }
+
+        $image = $service->images()->create([
+            'url' => $url,
+            'caption' => $data['caption'] ?? null,
+            'is_primary' => $data['is_primary'] ?? false,
+            'sort_order' => $data['sort_order'] ?? 0,
+        ]);
+
+        return $this->success($image, 'Image added successfully', 201);
     }
 
     /**
@@ -339,5 +513,78 @@ class ServiceApiController extends Controller
 
         $service->delete();
         return $this->success(null, 'Service deleted successfully', 200);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/services/{service}/images/{image}",
+     *     summary="Delete an image from a service (business owner or admin)",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="image",
+     *         in="path",
+     *         description="Image ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Image deleted successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Service not found or image not found for this service",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Service not found or Image not found for this service")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
+     */
+    public function deleteImage(int $serviceId, int $imageId)
+    {
+        $service = Service::find($serviceId);
+
+        if (!$service) {
+            return $this->error('Service not found', 404);
+        }
+
+        if (!Gate::allows('is-admin') && (!Gate::allows('is-business') || !Gate::allows('owns-model', $service))) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $image = $service->images()->find($imageId);
+
+        if (!$image) {
+            return $this->error('Service not found or Image not found for this service', 404);
+        }
+
+        $image->delete();
+
+        return $this->success(null, 'Image deleted successfully', 200);
     }
 }

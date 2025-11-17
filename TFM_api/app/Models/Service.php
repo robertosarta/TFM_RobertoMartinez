@@ -28,7 +28,12 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="user_id", type="integer", example=2),
  *     @OA\Property(property="subcategory_id", type="integer", example=5),
  *     @OA\Property(property="user", ref="#/components/schemas/UserBasic"),
- *     @OA\Property(property="subcategory", ref="#/components/schemas/Subcategory")
+ *     @OA\Property(property="subcategory", ref="#/components/schemas/Subcategory"),
+ *     @OA\Property(
+ *         property="images",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/ServiceImageBasic")
+ *     )
  * )
  */
 class Service extends Model
@@ -70,5 +75,9 @@ class Service extends Model
 
     public function reviews() {
         return $this->hasMany(Review::class, 'service_id');
+    }
+
+    public function images() {
+        return $this->hasMany(ServiceImage::class, 'service_id');
     }
 }

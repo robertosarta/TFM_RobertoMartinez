@@ -15,6 +15,7 @@ Route::get('/users/{id}', [UserApiController::class, 'show']); //VER USUARIO PUB
 Route::get('/categories', [CategoryApiController::class, 'index']);//INDICE CATEGORIAS PUBLICO
 Route::get('/services', [ServiceApiController::class, 'index']);//INDICE SERVICIOS PUBLICO
 Route::get('/services/{id}', [ServiceApiController::class, 'show']);//VER SERVICIO PUBLICO
+Route::get('/services/{id}/images', [ServiceApiController::class, 'images']);//IMAGENES SERVICIO PUBLICO
 Route::get('/subcategories', [SubcategoryApiController::class, 'index']);//INDICE SUBCATEGORIAS PUBLICO
 Route::get('/subcategories/{id}', [SubcategoryApiController::class, 'show']);//VER SUBCATEGORIAS PUBLICO
 Route::get('/reviews', [ReviewApiController::class, 'index']);//INDICE REVIEWS PUBLICO
@@ -30,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('categories', CategoryApiController::class)->only(['store', 'update', 'destroy']);
     //CRUD SERVICIOS
     Route::apiResource('services', ServiceApiController::class)->only(['store', 'update', 'destroy']);
+    //IMAGENES DE SERVICIOS
+    Route::post('/services/{id}/images', [ServiceApiController::class, 'addImage']);
+    Route::delete('/services/{service}/images/{image}', [ServiceApiController::class, 'deleteImage']);
     //CRUD SUBCATEGORIAS
     Route::apiResource('subcategories', SubcategoryApiController::class)->only(['store', 'update', 'destroy']);
     //CRUD REVIEWS

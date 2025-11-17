@@ -59,6 +59,19 @@ namespace App\Swagger;
  * )
  *
  * @OA\Schema(
+ *     schema="ServiceImageBasic",
+ *     title="ServiceImageBasic",
+ *     description="Image associated with a service",
+ *     type="object",
+ *     required={"id", "url"},
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="url", type="string", example="https://example.com/images/service1.jpg"),
+ *     @OA\Property(property="caption", type="string", nullable=true, example="Foto del salón principal"),
+ *     @OA\Property(property="is_primary", type="boolean", example=true),
+ *     @OA\Property(property="sort_order", type="integer", example=1)
+ * )
+ *
+ * @OA\Schema(
  *     schema="WeddingBasic",
  *     title="WeddingBasic",
  *     description="Wedding fields without relations",
