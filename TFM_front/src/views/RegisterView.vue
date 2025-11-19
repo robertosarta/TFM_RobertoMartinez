@@ -1,15 +1,107 @@
 <template>
   <div class="register">
     <h2>Registro</h2>
-    <p>Pendiente de implementar el formulario de registro.</p>
+
+    <form @submit.prevent="submit">
+      <input v-model="name" type="text" placeholder="Nombre completo" required />
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="phone" type="tel" placeholder="Teléfono (opcional)" />
+      <input v-model="address" type="text" placeholder="Dirección (opcional)" />
+
+      <input v-model="password" type="password" placeholder="Contraseña" required />
+      <input
+        v-model="passwordConfirmation"
+        type="password"
+        placeholder="Confirmar contraseña"
+        required
+      />
+
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Registrando...' : 'Registrarse' }}
+      </button>
+    </form>
+
+    <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+
+const router = useRouter()
+const auth = useAuthStore()
+
+const name = ref('')
+const email = ref('')
+const phone = ref('')
+const address = ref('')
+const password = ref('')
+const passwordConfirmation = ref('')
+
+const loading = ref(false)
+const error = ref('')
+
+const submit = async () => {
+  error.value = ''
+
+  if (password.value !== passwordConfirmation.value) {
+    error.value = 'Las contraseñas no coinciden'
+    return
+  }
+
+  loading.value = true
+
+  try {
+    await auth.register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: passwordConfirmation.value,
+      phone: phone.value || null,
+      address: address.value || null,
+    })
+
+    router.push('/')
+  } catch (e) {
+    if (e.response?.status === 422 && e.response.data?.errors) {
+      const firstError = Object.values(e.response.data.errors)[0]?.[0]
+      error.value = firstError || 'Datos inválidos'
+    } else {
+      error.value = e.response?.data?.message || 'Error al registrar'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+</script>
 
 <style scoped>
 .register {
-  padding: 2rem;
+  max-width: 500px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+input {
+  padding: 0.5rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
 }
 </style>
-
