@@ -44,5 +44,55 @@ class UserSeeder extends Seeder
             'address' => 'Calle Empresa 1',
             'role' => 'business',
         ]);
+
+        User::create([
+            'name' => 'Luna Novias',
+            'email' => 'luna.novias@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('novias123'),
+            'phone' => '600111222',
+            'address' => 'Calle del Álamo 12, Madrid',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Catering Delicias',
+            'email' => 'catering@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('catering123'),
+            'phone' => '600333444',
+            'address' => 'Av. Sabores 45, Barcelona',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Sonido & Bandas',
+            'email' => 'music@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('music123'),
+            'phone' => '600555666',
+            'address' => 'Calle Ritmo 8, Valencia',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Belleza Nupcial',
+            'email' => 'belleza@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('belleza123'),
+            'phone' => '600777888',
+            'address' => 'Plaza Estilo 3, Sevilla',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Floristería Pétalos',
+            'email' => 'floristeria@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('flores123'),
+            'phone' => '600999000',
+            'address' => 'Rambla Jardín 21, Bilbao',
+            'role' => 'business',
+        ]);
     }
 }
