@@ -7,6 +7,9 @@ describe('App', () => {
     const wrapper = mount(App, {
       global: {
         stubs: {
+          AppNavbar: {
+            template: '<div>NavbarStub</div>',
+          },
           'router-view': {
             template: '<div>RouterViewStub</div>',
           },
@@ -15,5 +18,6 @@ describe('App', () => {
     })
 
     expect(wrapper.text()).toContain('RouterViewStub')
+    expect(wrapper.text()).toContain('NavbarStub')
   })
 })

@@ -1,13 +1,18 @@
 <script setup></script>
 
+<script setup>
+import AppNavbar from './components/AppNavbar.vue'
+</script>
+
 <template>
-  <router-view />
+  <AppNavbar />
+  <main>
+    <router-view />
+  </main>
 </template>
 
 <style scoped>
-html,
-body {
-  margin: 0;
-  padding: 0;
+main {
+  padding: 1rem;
 }
 </style>
