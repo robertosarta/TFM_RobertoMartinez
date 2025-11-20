@@ -34,7 +34,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'luna.novias@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://plus.unsplash.com/premium_photo-1673546785747-8068f85588ad?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Colección primavera',
                         'is_primary' => true,
                     ],
@@ -55,7 +55,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'business@gmail.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://images.unsplash.com/photo-1604531826248-f0eca8eeb896?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Traje slim fit',
                         'is_primary' => true,
                     ],
@@ -76,7 +76,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'belleza@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://images.unsplash.com/photo-1633076748078-a21f5545c382?q=80&w=1103&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Paleta pastel',
                         'is_primary' => true,
                     ],
@@ -97,7 +97,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'belleza@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1524504388940-0c3b3d5455a0?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://plus.unsplash.com/premium_photo-1675107359827-6de8bcf03ccf?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Tocado artesanal',
                         'is_primary' => true,
                     ],
@@ -118,7 +118,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'catering@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1529042355635-76a1f5ef90b3?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://images.unsplash.com/photo-1752160024756-a45be904f89f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Buffet de temporada',
                         'is_primary' => true,
                     ],
@@ -139,7 +139,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'catering@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1501117716987-c8e1ecb210af?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://images.unsplash.com/photo-1707333514156-d42751dca70d?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                         'caption' => 'Jardines de la masía',
                         'is_primary' => true,
                     ],
@@ -442,8 +442,8 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $entry) {
-            $subcategoryId = $subcategories[$entry['subcategory']] ?? null;
-            $userId = $users[$entry['user_email']] ?? ($users['business@gmail.com'] ?? null);
+            $subcategoryId = $subcategories[$entry['subcategory']] ?? null; //Sacamos el id de la subcategoría gracias al nombre de la subcategoría
+            $userId = $users[$entry['user_email']] ?? ($users['business@gmail.com'] ?? null);  //Sacamos el id del usuario o el de la cuenta gracias al email y si no existe le asignamos el id del usuario business por defecto
 
             if (!$subcategoryId || !$userId) {
                 continue;

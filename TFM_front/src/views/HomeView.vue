@@ -13,10 +13,16 @@
     </section>
 
     <section class="section">
-      <h2>Servicios (primeras 6 entradas)</h2>
+      <h2>Servicios</h2>
       <div v-if="!services.length && !loading">No hay servicios disponibles</div>
       <div class="services-grid">
         <article v-for="svc in services" :key="svc.id" class="card">
+          <img
+            class="card__image"
+            :src="getImage(svc)"
+            :alt="svc.name"
+            loading="lazy"
+          />
           <h3>{{ svc.name }}</h3>
           <p class="desc">{{ svc.description }}</p>
           <p class="meta">
@@ -36,6 +42,8 @@ const categories = ref([])
 const services = ref([])
 const loading = ref(true)
 const error = ref('')
+const fallbackImage =
+  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60&auto=compress'
 
 const fetchData = async () => {
   loading.value = true
@@ -57,6 +65,13 @@ const fetchData = async () => {
 }
 
 onMounted(fetchData)
+
+const getImage = (svc) => {
+  if (svc.images && svc.images.length > 0) {
+    return svc.images[0].url
+  }
+  return fallbackImage
+}
 </script>
 
 <style scoped>
@@ -103,6 +118,13 @@ onMounted(fetchData)
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.card__image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .desc {

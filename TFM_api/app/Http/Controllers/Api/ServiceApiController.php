@@ -58,7 +58,10 @@ class ServiceApiController extends Controller
     public function index(Request $request)
     {
         $perPage = min((int) $request->query('per_page', 15), 50);
-        $services = Service::paginate($perPage);
+        $services = Service::with(['images' => function ($query) {
+            // Traemos solo la imagen principal (o la primera) para aligerar la respuesta
+            $query->orderByDesc('is_primary')->orderBy('sort_order')->limit(1);
+        }])->paginate($perPage);
         return $this->success($services, 200);
     }
 
