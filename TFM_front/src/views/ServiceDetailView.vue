@@ -78,15 +78,25 @@
           v-model="commentForm.comment"
           placeholder="Añadir un comentario..."
           rows="3"
+          ref="commentTextarea"
+          @input="resizeCommentBox"
           :disabled="!auth.token || commentLoading"
         ></textarea>
-        <button
-          type="button"
-          :disabled="!auth.token || commentLoading || !commentForm.comment"
-          @click="submitComment"
-        >
-          {{ commentLoading ? 'Enviando...' : 'Publicar' }}
-        </button>
+        <div class="comment-actions">
+          <label class="rating-select" aria-label="Puntuación">
+            <span aria-hidden="true">⭐</span>
+            <select v-model.number="commentForm.rating" :disabled="!auth.token || commentLoading">
+              <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            :disabled="!auth.token || commentLoading || !commentForm.comment"
+            @click="submitComment"
+          >
+            {{ commentLoading ? 'Enviando...' : 'Publicar' }}
+          </button>
+        </div>
         <p v-if="!auth.token" class="hint">Inicia sesión para comentar.</p>
         <p v-if="commentError" class="error">{{ commentError }}</p>
       </div>
@@ -130,6 +140,7 @@ const error = ref('')
 const reviewsLoading = ref(false)
 const commentLoading = ref(false)
 const commentError = ref('')
+const commentTextarea = ref(null)
 
 const commentForm = ref({
   rating: 5,
@@ -260,13 +271,18 @@ onMounted(async () => {
 
 .service__carousel {
   position: relative;
+  background: linear-gradient(120deg, #f9f9f9 0%, #f3f3f3 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel__image {
   width: 100%;
-  max-height: 420px;
+  height: auto;
+  max-height: 600px;
   object-fit: contain;
-  background: #f7f7f7;
+  display: block;
 }
 
 .carousel__controls {
@@ -362,9 +378,29 @@ onMounted(async () => {
   gap: 0.5rem;
 }
 
+.comment-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rating-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: #e3a10a;
+}
+
+.rating-select select {
+  padding: 0.35rem 0.5rem;
+}
+
 .comment-box textarea {
   width: 100%;
   padding: 0.5rem;
+  resize: none;
 }
 
 .comment-box button {
