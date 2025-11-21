@@ -38,6 +38,21 @@ class ServiceSeeder extends Seeder
                         'caption' => 'Colección primavera',
                         'is_primary' => true,
                     ],
+                    [
+                        'url' => 'https://plus.unsplash.com/premium_photo-1676234842565-bc1df0bfd45a?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                        'caption' => 'Vestido corte sirena',
+                        'is_primary' => true,
+                    ],
+                    [
+                        'url' => 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                        'caption' => 'Vestido con encaje',
+                        'is_primary' => true,
+                    ],
+                    [
+                        'url' => 'https://images.unsplash.com/photo-1676132067714-f48047af1509?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                        'caption' => 'vestidos de novia',
+                        'is_primary' => true,
+                    ],
                 ],
             ],
             [
@@ -160,7 +175,7 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'floristeria@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80',
+                        'url' => 'https://images.unsplash.com/photo-1661441248350-ffdbc88f6a68?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmFtbyUyMGJvZGF8ZW58MHx8MHx8fDA%3D',
                         'caption' => 'Ramo de novia',
                         'is_primary' => true,
                     ],

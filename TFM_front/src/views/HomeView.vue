@@ -16,7 +16,12 @@
       <h2>Servicios</h2>
       <div v-if="!services.length && !loading">No hay servicios disponibles</div>
       <div class="services-grid">
-        <article v-for="svc in services" :key="svc.id" class="card">
+        <RouterLink
+          v-for="svc in services"
+          :key="svc.id"
+          class="card"
+          :to="`/services/${svc.id}`"
+        >
           <img
             class="card__image"
             :src="getImage(svc)"
@@ -28,7 +33,7 @@
           <p class="meta">
             <span>Precio: {{ svc.price }}</span>
           </p>
-        </article>
+        </RouterLink>
       </div>
     </section>
   </div>
@@ -52,7 +57,7 @@ const fetchData = async () => {
   try {
     const [catRes, svcRes] = await Promise.all([
       api.get('/categories'),
-      api.get('/services', { params: { per_page: 6 } }),
+      api.get('/services', { params: { per_page: 7 } }),
     ])
 
     categories.value = catRes.data?.data || []
@@ -66,12 +71,7 @@ const fetchData = async () => {
 
 onMounted(fetchData)
 
-const getImage = (svc) => {
-  if (svc.images && svc.images.length > 0) {
-    return svc.images[0].url
-  }
-  return fallbackImage
-}
+const getImage = (svc) => svc.images?.[0]?.url || fallbackImage
 </script>
 
 <style scoped>

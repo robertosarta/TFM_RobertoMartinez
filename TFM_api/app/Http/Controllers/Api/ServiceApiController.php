@@ -360,7 +360,11 @@ class ServiceApiController extends Controller
      */
     public function show(int $id)
     {
-        $service = Service::find($id);
+        $service = Service::with([
+            'images' => fn($q) => $q->orderByDesc('is_primary')->orderBy('sort_order'),
+            'subcategory.category',
+            'user',
+        ])->find($id);
         if (!$service) {
             return $this->error('Service not found', 404);
         }
