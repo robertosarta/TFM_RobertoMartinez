@@ -105,13 +105,12 @@ const filteredServices = computed(() => {
 
     list = list.filter((s) => {
       const subId = Number(s.subcategory?.id ?? s.subcategory_id)
-      const subCatId = Number(s.subcategory?.category?.id ?? s.subcategory?.category_id)
-      return allowedSubIds.has(subId) || subCatId === catId
-    })
+      return allowedSubIds.has(subId)
+    }) // para reconocer los datos con o sin relaciones cargadas
   }
   if (selectedSubcategoryId.value) {
     const subId = Number(selectedSubcategoryId.value)
-    list = list.filter((s) => Number(s.subcategory?.id) === subId)
+    list = list.filter((s) => Number(s.subcategory?.id ?? s.subcategory_id) === subId)
   }
   return list
 })
