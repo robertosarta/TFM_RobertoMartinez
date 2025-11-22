@@ -97,9 +97,16 @@ const filteredServices = computed(() => {
   let list = services.value
   if (selectedCategoryId.value) {
     const catId = Number(selectedCategoryId.value)
+    const allowedSubIds = new Set(
+      subcategories.value
+        .filter((s) => Number(s.category_id) === catId)
+        .map((s) => Number(s.id)),
+    )
+
     list = list.filter((s) => {
+      const subId = Number(s.subcategory?.id ?? s.subcategory_id)
       const subCatId = Number(s.subcategory?.category?.id ?? s.subcategory?.category_id)
-      return subCatId === catId
+      return allowedSubIds.has(subId) || subCatId === catId
     })
   }
   if (selectedSubcategoryId.value) {
