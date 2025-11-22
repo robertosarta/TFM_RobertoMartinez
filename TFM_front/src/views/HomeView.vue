@@ -72,9 +72,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '../api/axios'
 
+const route = useRoute()
 const categories = ref([])
 const subcategories = ref([])
 const services = ref([])
@@ -170,6 +172,30 @@ const toggleSubcategory = (id) => {
 const loadMore = () => {
   visibleCount.value += 7
 }
+
+const handleResetFilters = () => {
+  selectedCategoryId.value = null
+  selectedSubcategoryId.value = null
+  visibleCount.value = 7
+}
+
+watch(
+  () => route.path,
+  (path) => {
+    if (path === '/') {
+      handleResetFilters()
+    }
+  },
+  { immediate: true },
+)
+
+onMounted(() => {
+  window.addEventListener('reset-home-filters', handleResetFilters)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('reset-home-filters', handleResetFilters)
+})
 </script>
 
 <style scoped>
@@ -182,10 +208,11 @@ const loadMore = () => {
 
 .sticky-filter {
   position: sticky;
-  top: 0;
+  top: 2rem; /* deja espacio bajo el navbar sticky */
   z-index: 5;
   background: #fff;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .section {
@@ -198,6 +225,7 @@ const loadMore = () => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .chip-list {
@@ -239,6 +267,7 @@ const loadMore = () => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
+  margin-top: 0.5rem;
 }
 
 .card {

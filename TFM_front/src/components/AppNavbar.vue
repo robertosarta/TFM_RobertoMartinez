@@ -1,11 +1,11 @@
 <template>
   <nav class="navbar">
     <div class="navbar__brand">
-      <RouterLink to="/">Bodas</RouterLink>
+      <RouterLink to="/" @click="goHome">Bodas</RouterLink>
     </div>
 
     <div class="navbar__links">
-      <RouterLink to="/">Inicio</RouterLink>
+      <RouterLink to="/" @click="goHome">Inicio</RouterLink>
 
       <template v-if="!auth.token">
         <RouterLink to="/login">Login</RouterLink>
@@ -31,6 +31,11 @@ const handleLogout = async () => {
   await auth.logout()
   router.push('/login')
 }
+
+const goHome = () => {
+  router.push('/').catch(() => {})
+  window.dispatchEvent(new CustomEvent('reset-home-filters'))
+}
 </script>
 
 <style scoped>
@@ -41,6 +46,10 @@ const handleLogout = async () => {
   padding: 0.75rem 1.5rem;
   background: #f6f6f6;
   border-bottom: 1px solid #e3e3e3;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 0.5rem;
 }
 
 .navbar__brand a {
