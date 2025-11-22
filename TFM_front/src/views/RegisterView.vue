@@ -16,6 +16,14 @@
         required
       />
 
+      <label class="role-select">
+        Tipo de cuenta:
+        <select v-model="role">
+          <option value="user">Usuario</option>
+          <option value="business">Negocio</option>
+        </select>
+      </label>
+
       <button type="submit" :disabled="loading">
         {{ loading ? 'Registrando...' : 'Registrarse' }}
       </button>
@@ -39,6 +47,7 @@ const phone = ref('')
 const address = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
+const role = ref('user')
 
 const loading = ref(false)
 const error = ref('')
@@ -61,6 +70,7 @@ const submit = async () => {
       password_confirmation: passwordConfirmation.value,
       phone: phone.value || null,
       address: address.value || null,
+      role: role.value,
     })
 
     router.push('/')

@@ -39,10 +39,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string',
             'address' => 'nullable|string|max:255',
+            'role' => 'nullable|in:user,business',
         ]);
 
         $data['password'] = Hash::make($data['password']);
-        $data['role'] = 'user';
+        $data['role'] = $data['role'] ?? 'user';
 
         $user = User::create($data);
         $token = $user->createToken($user->email)->plainTextToken;
