@@ -185,7 +185,15 @@ class WeddingApiController extends Controller
      */
     public function show(int $id)
     {
-        $wedding = Wedding::with(['services', 'user'])->find($id);
+        $wedding = Wedding::with([
+            'services' => function ($q) {
+                $q->with([
+                    'subcategory.category',
+                    'images' => fn ($iq) => $iq->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                ]);
+            },
+            'user',
+        ])->find($id);
 
         if (!$wedding) {
             return $this->error('Wedding not found', 404);
@@ -409,7 +417,14 @@ class WeddingApiController extends Controller
      */
     public function services(int $id)
     {
-        $wedding = Wedding::with('services')->find($id);
+        $wedding = Wedding::with([
+            'services' => function ($q) {
+                $q->with([
+                    'subcategory.category',
+                    'images' => fn ($iq) => $iq->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                ]);
+            },
+        ])->find($id);
 
         if (!$wedding) {
             return $this->error('Wedding not found', 404);
