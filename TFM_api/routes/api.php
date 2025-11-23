@@ -25,6 +25,8 @@ Route::get('/reviews/{id}', [ReviewApiController::class, 'show']);//VER REVIEW P
 Route::middleware('auth:sanctum')->group(function() {
     //LOGOUT
     Route::post('/logout', [AuthController::class, 'logout']);
+    //SERVICIOS DEL USUARIO AUTENTICADO (BUSINESS/ADMIN)
+    Route::get('/my/services', [ServiceApiController::class, 'myServices']);
     //CRUD USUARIOS
     Route::apiResource('users', UserApiController::class)->only(['index', 'store', 'update', 'destroy']);
     //CRUD CATEGORIAS

@@ -14,6 +14,102 @@ class ServiceApiController extends Controller
 {
     /**
      * @OA\Get(
+     *     path="/my/services",
+     *     summary="List services of the authenticated business (or any user if admin)",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         description="Only admins: filter services by user_id",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="include_reviews",
+     *         in="query",
+     *         description="If true, includes latest 3 reviews with user and reviews_count",
+     *         required=false,
+     *         @OA\Schema(type="boolean", default=false)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (max 50)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/Service")
+     *                 ),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     security={{"sanctum": {}}}
+     * )
+     */
+    public function myServices(Request $request)
+    {
+        $isAdmin = Gate::allows('is-admin');
+        $isBusiness = Gate::allows('is-business');
+
+        if (!$isAdmin && !$isBusiness) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $perPage = min((int) $request->query('per_page', 15), 50);
+        $includeReviews = filter_var($request->query('include_reviews', false), FILTER_VALIDATE_BOOLEAN);
+
+        $query = Service::query()
+            ->with([
+                'subcategory.category',
+                'images' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
+            ])
+            ->withCount('reviews');
+
+        if ($includeReviews) {
+            $query->with(['reviews' => function ($q) {
+                $q->latest()->limit(3)->with('user');
+            }]);
+        }
+
+        if ($isAdmin && $request->filled('user_id')) {
+            $query->where('user_id', $request->integer('user_id'));
+        } else {
+            $query->where('user_id', Auth::id());
+        }
+
+        $services = $query->paginate($perPage);
+
+        return $this->success($services);
+    }
+
+    /**
+     * @OA\Get(
      *     path="/services",
      *     summary="List all services (paginated)",
      *     tags={"Services"},
