@@ -85,7 +85,7 @@ namespace App\Swagger;
  *     @OA\Property(property="notes", type="string", example="Ceremonia al aire libre"),
  *     @OA\Property(property="budget", type="string", example="15000.00"),
  *     @OA\Property(property="guest_count", type="integer", example=120),
- *     @OA\Property(property="status", type="string", example="draft")
+ *     @OA\Property(property="status", type="string", example="gestionando")
  * )
  *
  * @OA\Schema(
@@ -98,7 +98,7 @@ namespace App\Swagger;
  *     @OA\Property(property="price", type="string", nullable=true, example="1000.00", description="Unit price agreed for this wedding"),
  *     @OA\Property(property="quantity", type="integer", nullable=true, example=1),
  *     @OA\Property(property="notes", type="string", nullable=true, example="Pago por horas"),
- *     @OA\Property(property="status", type="string", example="pending")
+ *     @OA\Property(property="status", type="string", example="consultado")
  * )
  *
  * @OA\Schema(

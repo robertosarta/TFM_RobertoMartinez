@@ -236,22 +236,32 @@ class UserApiController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        if (!Gate::allows('is-admin')) {
-            return $this->error('Forbidden', 403);
-        }
-
         $user = User::find($id);
         if (!$user) {
             return $this->error('User not found', 404);
         }
-        $data = $request->validate([
+
+        $isAdmin = Gate::allows('is-admin');
+        $isOwner = Gate::allows('owns-model', $user);
+
+        if (!$isAdmin && !$isOwner) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $rules = [
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|unique:users,email,'.$user->id,
             'password' => 'sometimes|string|min:8|confirmed',
             'phone' => 'nullable|string',
             'address' => 'nullable|string|max:255',
-            'role' => 'sometimes|in:admin,user,business',
-        ]);
+        ];
+
+        // Solo los admin pueden cambiar roles
+        if ($isAdmin) {
+            $rules['role'] = 'sometimes|in:admin,user,business';
+        }
+
+        $data = $request->validate($rules);
 
         // Rechazar payload vacío o JSON inválido (sin campos actualizables)
         if (empty($data)) {

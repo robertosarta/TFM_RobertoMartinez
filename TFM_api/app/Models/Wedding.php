@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="notes", type="string", example="Ceremonia al aire libre"),
  *     @OA\Property(property="budget", type="string", example="15000.00"),
  *     @OA\Property(property="guest_count", type="integer", example=120),
- *     @OA\Property(property="status", type="string", example="draft"),
+ *     @OA\Property(property="status", type="string", example="gestionando"),
  *     @OA\Property(property="user", ref="#/components/schemas/UserBasic"),
  *     @OA\Property(
  *         property="services",

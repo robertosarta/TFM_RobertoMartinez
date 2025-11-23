@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->decimal('budget', 10, 2)->nullable();
             $table->unsignedInteger('guest_count')->nullable();
-            $table->string('status')->default('draft');
+            $table->string('status')->default('gestionando');
             $table->timestamps();
         });
     }
@@ -33,4 +33,3 @@ return new class extends Migration
         Schema::dropIfExists('weddings');
     }
 };
-

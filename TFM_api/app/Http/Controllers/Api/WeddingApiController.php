@@ -84,7 +84,7 @@ class WeddingApiController extends Controller
      *             @OA\Property(property="notes", type="string"),
      *             @OA\Property(property="budget", type="number", format="float"),
      *             @OA\Property(property="guest_count", type="integer"),
-     *             @OA\Property(property="status", type="string", enum={"draft","confirmed","cancelled","archived"})
+     *             @OA\Property(property="status", type="string", enum={"gestionando","confirmada","cancelada","archivada"})
      *         )
      *     ),
      *     @OA\Response(
@@ -126,13 +126,13 @@ class WeddingApiController extends Controller
             'notes' => 'nullable|string',
             'budget' => 'nullable|numeric',
             'guest_count' => 'nullable|integer|min:0',
-            'status' => 'nullable|string|in:draft,confirmed,cancelled,archived',
+            'status' => 'nullable|string|in:gestionando,confirmada,cancelada,archivada',
         ]);
 
         $data['user_id'] = Auth::id();
 
         if (!isset($data['status'])) {
-            $data['status'] = 'draft';
+            $data['status'] = 'gestionando';
         }
 
         $wedding = Wedding::create($data);
@@ -218,7 +218,7 @@ class WeddingApiController extends Controller
      *             @OA\Property(property="notes", type="string"),
      *             @OA\Property(property="budget", type="number", format="float"),
      *             @OA\Property(property="guest_count", type="integer"),
-     *             @OA\Property(property="status", type="string", enum={"draft","confirmed","cancelled","archived"})
+     *             @OA\Property(property="status", type="string", enum={"gestionando","confirmada","cancelada","archivada"})
      *         )
      *     ),
      *     @OA\Response(
@@ -288,7 +288,7 @@ class WeddingApiController extends Controller
             'notes' => 'sometimes|string|nullable',
             'budget' => 'sometimes|numeric|nullable',
             'guest_count' => 'sometimes|integer|min:0|nullable',
-            'status' => 'sometimes|string|in:draft,confirmed,cancelled,archived|nullable',
+            'status' => 'sometimes|string|in:gestionando,confirmada,cancelada,archivada|nullable',
         ]);
 
         if (empty($data)) {
@@ -442,7 +442,7 @@ class WeddingApiController extends Controller
      *             @OA\Property(property="price", type="number", format="float", nullable=true, description="Unit price agreed for this wedding; if omitted, the current service price is used"),
      *             @OA\Property(property="quantity", type="integer", nullable=true),
      *             @OA\Property(property="notes", type="string", nullable=true),
-     *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}, nullable=true)
+     *             @OA\Property(property="status", type="string", enum={"consultado","confirmado","cancelado"}, nullable=true)
      *         )
      *     ),
      *     @OA\Response(
@@ -503,7 +503,7 @@ class WeddingApiController extends Controller
             'price' => 'nullable|numeric',
             'quantity' => 'nullable|integer|min:1',
             'notes' => 'nullable|string',
-            'status' => 'nullable|string|in:pending,confirmed,cancelled',
+            'status' => 'nullable|string|in:consultado,confirmado,cancelado',
         ]);
 
         $serviceId = $data['service_id'];
@@ -514,7 +514,7 @@ class WeddingApiController extends Controller
             'price' => $data['price'] ?? ($service ? $service->price : null),
             'quantity' => $data['quantity'] ?? 1,
             'notes' => $data['notes'] ?? null,
-            'status' => $data['status'] ?? 'pending',
+            'status' => $data['status'] ?? 'consultado',
         ];
 
         // avoid duplicate because of unique index; update if already attached
@@ -551,7 +551,7 @@ class WeddingApiController extends Controller
      *             @OA\Property(property="price", type="number", format="float", nullable=true),
      *             @OA\Property(property="quantity", type="integer", nullable=true),
      *             @OA\Property(property="notes", type="string", nullable=true),
-     *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}, nullable=true)
+     *             @OA\Property(property="status", type="string", enum={"consultado","confirmado","cancelado"}, nullable=true)
      *         )
      *     ),
      *     @OA\Response(
@@ -622,7 +622,7 @@ class WeddingApiController extends Controller
             'price' => 'sometimes|numeric|nullable',
             'quantity' => 'sometimes|integer|min:1|nullable',
             'notes' => 'sometimes|string|nullable',
-            'status' => 'sometimes|string|in:pending,confirmed,cancelled|nullable',
+            'status' => 'sometimes|string|in:consultado,confirmado,cancelado|nullable',
         ]);
 
         if (empty($data)) {
