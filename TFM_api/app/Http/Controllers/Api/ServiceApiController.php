@@ -535,15 +535,15 @@ class ServiceApiController extends Controller
 
         if(!$service) {
             return $this->error('Service not found', 404);
-        }
-        
+        }       
+
         // Verificamos que el usuario autenticado es el propietario del servicio y business, o un admin
         if (!Gate::allows('is-admin') && (!Gate::allows('is-business') || !Gate::allows('owns-model', $service))) {
             return $this->error('Forbidden', 403);
         }
         
         // Validamos solo los campos que se envian en el request
-        $data = $request->validate([
+        $rules = [
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|email',
             'phone' => 'sometimes|string|max:20',
@@ -553,8 +553,14 @@ class ServiceApiController extends Controller
             'address.zip' => 'sometimes|string|max:20',
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric',
-            'subcategory_id' => 'sometimes|integer|exists:subcategories,id'
-        ]);
+        ];
+
+        // Solo los administradores pueden cambiar la subcategoría
+        if (Gate::allows('is-admin')) {
+            $rules['subcategory_id'] = 'sometimes|integer|exists:subcategories,id';
+        }
+
+        $data = $request->validate($rules);
 
         // Evitamos respuestas 200 sin cambios cuando el JSON esta vacio
         if (empty($data)) {
