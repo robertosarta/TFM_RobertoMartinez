@@ -257,11 +257,11 @@
                   <div class="wedding-service__thumb">
                     <img :src="svc.images?.[0]?.url || fallbackImage" :alt="svc.name" />
                   </div>
-                  <div class="wedding-service__controls">
-                    <label>
-                      Precio pactado
-                      <input
-                        v-model.number="weddingUpdates[svc.id].price"
+                <div class="wedding-service__controls">
+                  <label>
+                    Precio pactado
+                    <input
+                      v-model.number="weddingUpdates[svc.id].price"
                         type="number"
                         step="0.01"
                       />
@@ -274,22 +274,28 @@
                         min="1"
                       />
                     </label>
-                    <label>
-                      Estado
-                      <select v-model="weddingUpdates[svc.id].status">
-                        <option v-for="opt in serviceStatusOptions" :key="opt" :value="opt">
-                          {{ opt }}
-                        </option>
-                      </select>
-                    </label>
-                    <button @click="saveWeddingService(svc.id)" :disabled="weddingLoading">
-                      Guardar
-                    </button>
-                  </div>
-                  <div class="pivot-meta">
-                    <span>Actual: {{ svc.pivot?.status || '—' }}</span>
-                    <span>Precio: {{ svc.pivot?.price ?? 0 }}</span>
-                    <span>Cant: {{ svc.pivot?.quantity ?? 1 }}</span>
+                  <label>
+                    Estado
+                    <select
+                      v-model="weddingUpdates[svc.id].status"
+                      :class="statusSelectClass(weddingUpdates[svc.id].status)"
+                    >
+                      <option v-for="opt in serviceStatusOptions" :key="opt" :value="opt">
+                        {{ opt }}
+                      </option>
+                    </select>
+                  </label>
+                  <button @click="saveWeddingService(svc.id)" :disabled="weddingLoading">
+                    Guardar
+                  </button>
+                  <button class="danger" @click="detachWeddingService(svc.id)" :disabled="weddingLoading">
+                    Quitar
+                  </button>
+                </div>
+                <div class="pivot-meta">
+                  <span>Actual: {{ svc.pivot?.status || '—' }}</span>
+                  <span>Precio: {{ svc.pivot?.price ?? 0 }}</span>
+                  <span>Cant: {{ svc.pivot?.quantity ?? 1 }}</span>
                   </div>
                 </div>
               </div>
@@ -501,6 +507,7 @@ const loadWedding = async () => {
 
 const loadWeddingServices = async () => {
   if (!wedding.value?.id) return
+  weddingError.value = ''
   try {
     const res = await api.get(`/weddings/${wedding.value.id}`)
     wedding.value = res.data?.data
@@ -512,7 +519,37 @@ const loadWeddingServices = async () => {
       }
     })
   } catch (e) {
-    weddingError.value = e.response?.data?.message || 'Error al cargar servicios de la boda'
+    // Intento de fallback: cargar solo los servicios de la boda
+    if (e.response?.status === 404) {
+      wedding.value = null
+      weddingError.value = 'No se ha encontrado tu boda. Crea una nueva.'
+      return
+    }
+    if (e.response?.status === 403) {
+      weddingError.value = 'No tienes permisos para ver esta boda.'
+      return
+    }
+
+    try {
+      const servicesRes = await api.get(`/weddings/${wedding.value.id}/services`)
+      const services = servicesRes.data?.data || []
+      wedding.value = wedding.value || {}
+      wedding.value.services = services
+      services.forEach((svc) => {
+        weddingUpdates[svc.id] = {
+          price: svc.pivot?.price,
+          quantity: svc.pivot?.quantity ?? 1,
+          status: svc.pivot?.status || 'consultado',
+        }
+      })
+      // Fallback exitoso: no mostrar mensaje de error
+      weddingError.value = ''
+    } catch (fallbackErr) {
+      weddingError.value =
+        fallbackErr.response?.data?.message ||
+        e.response?.data?.message ||
+        'Error al cargar servicios de la boda'
+    }
   }
 }
 
@@ -545,6 +582,20 @@ const saveWeddingService = async (serviceId) => {
   }
 }
 
+const detachWeddingService = async (serviceId) => {
+  if (!wedding.value?.id) return
+  weddingLoading.value = true
+  weddingError.value = ''
+  try {
+    await api.delete(`/weddings/${wedding.value.id}/services/${serviceId}`)
+    await loadWeddingServices()
+  } catch (e) {
+    weddingError.value = e.response?.data?.message || 'Error al quitar servicio'
+  } finally {
+    weddingLoading.value = false
+  }
+}
+
 const reloadWedding = async () => {
   await loadWedding()
 }
@@ -565,6 +616,8 @@ const groupedServicesKeys = computed(() => Object.keys(groupedServices.value))
 const weddingTotal = computed(() => {
   if (!wedding.value?.services) return 0
   return wedding.value.services.reduce((acc, svc) => {
+    const status = svc.pivot?.status
+    if (status !== 'confirmado') return acc
     const price = Number(svc.pivot?.price ?? 0)
     const qty = Number(svc.pivot?.quantity ?? 1)
     return acc + price * qty
@@ -577,6 +630,12 @@ const cleanPayload = (obj) =>
       ([, v]) => v !== '' && v !== null && v !== undefined && !(typeof v === 'number' && Number.isNaN(v)),
     ),
   )
+
+const statusSelectClass = (status) => {
+  if (status === 'confirmado') return 'status-select confirmed'
+  if (status === 'cancelado') return 'status-select cancelled'
+  return 'status-select consulted'
+}
 
 onMounted(async () => {
   if (role.value === 'business' || role.value === 'admin') {
@@ -761,9 +820,10 @@ button.ghost {
   grid-template-columns: 2fr auto 3fr;
   gap: 0.75rem;
   align-items: center;
-  border: 1px solid #eee;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 0.75rem;
   border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .wedding-service__info .title {
@@ -780,15 +840,41 @@ button.ghost {
 
 .wedding-service__controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(160px, 1fr)) auto auto;
+  gap: 1.4rem;
   align-items: end;
+  margin-top: 0.35rem;
 }
 
 .wedding-service__controls input,
 .wedding-service__controls select {
   width: 100%;
   padding: 0.4rem;
+  border-radius: 6px;
+  border: 0.11rem solid #686868;
+  box-shadow: none;
+}
+
+.status-select {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.status-select.consulted {
+  background: #fff9e6;
+  border-color: #f0c572;
+  color: #8a5a00;
+}
+
+.status-select.confirmed {
+  background: #e9f8ed;
+  border-color: #66b98a;
+  color: #166534;
+}
+
+.status-select.cancelled {
+  background: #fdeaea;
+  border-color: #e08a8a;
+  color: #a02020;
 }
 
 .pivot-meta {

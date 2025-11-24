@@ -896,6 +896,114 @@
                 ]
             }
         },
+        "/my/services": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "List services of the authenticated business (or any user if admin)",
+                "operationId": "11e4e45c615c6a5342da572a5dcb236c",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Only admins: filter services by user_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include_reviews",
+                        "in": "query",
+                        "description": "If true, includes latest 3 reviews with user and reviews_count",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (max 50)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Service"
+                                                    }
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/services": {
             "get": {
                 "tags": [
@@ -2648,10 +2756,10 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "draft",
-                                            "confirmed",
-                                            "cancelled",
-                                            "archived"
+                                            "gestionando",
+                                            "confirmada",
+                                            "cancelada",
+                                            "archivada"
                                         ]
                                     }
                                 },
@@ -2853,10 +2961,10 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "draft",
-                                            "confirmed",
-                                            "cancelled",
-                                            "archived"
+                                            "gestionando",
+                                            "confirmada",
+                                            "cancelada",
+                                            "archivada"
                                         ]
                                     }
                                 },
@@ -3186,9 +3294,9 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "pending",
-                                            "confirmed",
-                                            "cancelled"
+                                            "consultado",
+                                            "confirmado",
+                                            "cancelado"
                                         ],
                                         "nullable": true
                                     }
@@ -3339,9 +3447,9 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "pending",
-                                            "confirmed",
-                                            "cancelled"
+                                            "consultado",
+                                            "confirmado",
+                                            "cancelado"
                                         ],
                                         "nullable": true
                                     }
@@ -3803,7 +3911,7 @@
                     },
                     "status": {
                         "type": "string",
-                        "example": "draft"
+                        "example": "gestionando"
                     },
                     "user": {
                         "$ref": "#/components/schemas/UserBasic"
@@ -4023,7 +4131,7 @@
                     },
                     "status": {
                         "type": "string",
-                        "example": "draft"
+                        "example": "gestionando"
                     }
                 },
                 "type": "object"
@@ -4058,7 +4166,7 @@
                     },
                     "status": {
                         "type": "string",
-                        "example": "pending"
+                        "example": "consultado"
                     }
                 },
                 "type": "object"

@@ -4,6 +4,8 @@
 
     <p v-if="loading">Cargando datos...</p>
     <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="actionMessage" class="success">{{ actionMessage }}</p>
+    <p v-if="actionError" class="error">{{ actionError }}</p>
 
     <section class="section sticky-filter">
       <div class="filter-row">
@@ -44,24 +46,28 @@
       <div v-if="!visibleServices.length && !loading">No hay servicios disponibles</div>
 
       <div class="services-grid">
-        <RouterLink
-          v-for="svc in visibleServices"
-          :key="svc.id"
-          class="card"
-          :to="`/services/${svc.id}`"
-        >
-          <img
-            class="card__image"
-            :src="getImage(svc)"
-            :alt="svc.name"
-            loading="lazy"
-          />
-          <h3>{{ svc.name }}</h3>
-          <p class="desc">{{ svc.description }}</p>
-          <p class="meta">
-            <span>Precio: {{ svc.price }}</span>
-          </p>
-        </RouterLink>
+        <div v-for="svc in visibleServices" :key="svc.id" class="card">
+          <RouterLink :to="`/services/${svc.id}`" class="card__link">
+            <img
+              class="card__image"
+              :src="getImage(svc)"
+              :alt="svc.name"
+              loading="lazy"
+            />
+            <h3>{{ svc.name }}</h3>
+            <p class="desc">{{ svc.description }}</p>
+            <p class="meta">
+              <span>Precio: {{ svc.price }}</span>
+            </p>
+          </RouterLink>
+          <button
+            class="add-btn"
+            :disabled="attachLoading === svc.id"
+            @click="attachToWedding(svc.id, svc.price)"
+          >
+            {{ attachLoading === svc.id ? 'Añadiendo...' : 'Añadir a mi boda' }}
+          </button>
+        </div>
       </div>
 
       <div class="services-actions" v-if="canLoadMore">
@@ -73,15 +79,21 @@
 
 <script setup>
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api/axios'
+import { useAuthStore } from '../stores/auth'
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 const categories = ref([])
 const subcategories = ref([])
 const services = ref([])
 const loading = ref(true)
 const error = ref('')
+const actionMessage = ref('')
+const actionError = ref('')
+const attachLoading = ref(null)
 const fallbackImage =
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60&auto=compress'
 
@@ -127,6 +139,8 @@ const selectedCategoryName = computed(() => {
 const fetchData = async () => {
   loading.value = true
   error.value = ''
+  actionMessage.value = ''
+  actionError.value = ''
 
   try {
     const [catRes, subcatRes, svcRes] = await Promise.all([
@@ -196,6 +210,53 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('reset-home-filters', handleResetFilters)
 })
+
+// Mostrar botón para usuarios logueados con rol user y también para no logueados (redirige a login).
+const ensureWedding = async () => {
+  // intenta obtener la boda existente o crea una nueva
+  const res = await api.get('/weddings', { params: { per_page: 1 } })
+  const list = res.data?.data?.data || []
+  if (list.length) return list[0]
+  const created = await api.post('/weddings', { name: 'Mi boda', status: 'gestionando' })
+  return created.data?.data
+}
+
+const attachToWedding = async (serviceId, price) => {
+  actionMessage.value = ''
+  actionError.value = ''
+
+  if (!auth.token) {
+    router.push('/login')
+    return
+  }
+
+  if (auth.user?.role !== 'user') {
+    actionError.value = 'Debes iniciar sesión como usuario para crear tu boda.'
+    return
+  }
+
+  attachLoading.value = serviceId
+
+  try {
+    const wedding = await ensureWedding()
+    await api.post(`/weddings/${wedding.id}/services`, {
+      service_id: serviceId,
+      price,
+      quantity: 1,
+      status: 'consultado',
+    })
+    actionMessage.value = 'Servicio añadido a tu boda'
+  } catch (e) {
+    if (e.response?.status === 401) {
+      await auth.logout()
+      router.push('/login')
+      return
+    }
+    actionError.value = e.response?.data?.message || 'No se pudo añadir el servicio'
+  } finally {
+    attachLoading.value = null
+  }
+}
 </script>
 
 <style scoped>
@@ -280,6 +341,14 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 
+.card__link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .card__image {
   width: 100%;
   height: 140px;
@@ -311,5 +380,22 @@ onBeforeUnmount(() => {
 
 .error {
   color: red;
+}
+
+.success {
+  color: #0a7f3f;
+}
+
+.add-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
