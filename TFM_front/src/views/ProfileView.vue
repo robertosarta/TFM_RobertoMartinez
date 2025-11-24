@@ -96,8 +96,13 @@
                 <input v-model.number="createServiceForm.price" type="number" step="0.01" required />
               </div>
               <div class="form-row">
-                <label>Subcategoría (ID)</label>
-                <input v-model.number="createServiceForm.subcategory_id" type="number" />
+                <label>Subcategoría</label>
+                <select v-model="createServiceForm.subcategory_id">
+                  <option value="">(sin subcategoría)</option>
+                  <option v-for="sub in subcategories" :key="sub.id" :value="sub.id">
+                    {{ sub.name }}<span v-if="sub.category"> · {{ sub.category.name }}</span>
+                  </option>
+                </select>
               </div>
               <div class="form-row">
                 <label>Ciudad</label>
@@ -115,6 +120,16 @@
             <div class="form-row">
               <label>Descripción</label>
               <textarea v-model="createServiceForm.description" rows="3"></textarea>
+            </div>
+            <div class="grid-2">
+              <div class="form-row">
+                <label>URL imagen (opcional)</label>
+                <input v-model="createServiceImage.url" type="url" placeholder="https://..." />
+              </div>
+              <div class="form-row">
+                <label>Archivo imagen (opcional)</label>
+                <input type="file" accept="image/*" @change="onCreateFileChange" />
+              </div>
             </div>
             <div class="form-actions">
               <button type="submit" :disabled="servicesLoading">
@@ -164,6 +179,15 @@
                 <div class="form-row">
                   <label>Precio</label>
                   <input v-model.number="serviceEdits[svc.id].price" type="number" step="0.01" />
+                </div>
+                <div class="form-row">
+                  <label>Subcategoría</label>
+                  <select v-model="serviceEdits[svc.id].subcategory_id">
+                    <option value="">(sin subcategoría)</option>
+                    <option v-for="sub in subcategories" :key="sub.id" :value="sub.id">
+                      {{ sub.name }}<span v-if="sub.category"> · {{ sub.category.name }}</span>
+                    </option>
+                  </select>
                 </div>
                 <div class="form-row">
                   <label>Descripción</label>
@@ -364,18 +388,23 @@ const services = ref([])
 const servicesLoading = ref(false)
 const servicesError = ref('')
 const showCreateService = ref(false)
+const subcategories = ref([])
 const createServiceForm = reactive({
   name: '',
   email: auth.user?.email || '',
   phone: auth.user?.phone || '',
   price: '',
-  subcategory_id: '',
   description: '',
+  subcategory_id: '',
   address: {
     street: '',
     city: '',
     zip: '',
   },
+})
+const createServiceImage = reactive({
+  url: '',
+  file: null,
 })
 const serviceEdits = reactive({})
 const imageUrls = reactive({})
@@ -383,6 +412,15 @@ const imageFiles = reactive({})
 
 const toggleCreateService = () => {
   showCreateService.value = !showCreateService.value
+}
+
+const fetchSubcategories = async () => {
+  try {
+    const res = await api.get('/subcategories')
+    subcategories.value = res.data?.data || []
+  } catch {
+    subcategories.value = []
+  }
 }
 
 const fetchServices = async () => {
@@ -398,6 +436,7 @@ const fetchServices = async () => {
         name: svc.name,
         price: svc.price,
         description: svc.description,
+        subcategory_id: svc.subcategory_id,
       }
       imageUrls[svc.id] = ''
       imageFiles[svc.id] = null
@@ -419,16 +458,26 @@ const createService = async () => {
       servicesLoading.value = false
       return
     }
-    await api.post('/services', payload)
+    const res = await api.post('/services', payload)
+    const newServiceId = res.data?.data?.id
+
+    if (newServiceId && (createServiceImage.url || createServiceImage.file)) {
+      const form = new FormData()
+      if (createServiceImage.file) form.append('image', createServiceImage.file)
+      if (createServiceImage.url) form.append('url', createServiceImage.url)
+      await api.post(`/services/${newServiceId}/images`, form)
+    }
+
     Object.assign(createServiceForm, {
       name: '',
       email: auth.user?.email || '',
       phone: auth.user?.phone || '',
       price: '',
-      subcategory_id: '',
       description: '',
+      subcategory_id: '',
       address: { street: '', city: '', zip: '' },
     })
+    Object.assign(createServiceImage, { url: '', file: null })
     showCreateService.value = false
     await fetchServices()
   } catch (e) {
@@ -477,6 +526,11 @@ const addServiceImage = async (id) => {
 const onFileChange = (id, event) => {
   const file = event.target.files?.[0]
   imageFiles[id] = file || null
+}
+
+const onCreateFileChange = (event) => {
+  const file = event.target.files?.[0]
+  createServiceImage.file = file || null
 }
 
 // User: Mi boda
@@ -639,6 +693,7 @@ const statusSelectClass = (status) => {
 
 onMounted(async () => {
   if (role.value === 'business' || role.value === 'admin') {
+    await fetchSubcategories()
     await fetchServices()
   } else {
     await loadWedding()
@@ -763,6 +818,7 @@ button.ghost {
   padding: 1rem;
   display: grid;
   gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .card__header {

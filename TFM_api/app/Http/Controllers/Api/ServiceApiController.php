@@ -395,7 +395,7 @@ class ServiceApiController extends Controller
             return $this->error('Forbidden', 403);
         }
 
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string|max:20',
@@ -405,18 +405,20 @@ class ServiceApiController extends Controller
             'address.zip' => 'nullable|string|max:20',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'subcategory_id' => 'nullable|integer|exists:subcategories,id'
-        ]);
+            'subcategory_id' => 'nullable|integer|exists:subcategories,id',
+        ];
+
+        $data = $request->validate($rules);
 
         $service = Service::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'description' => $request->description,
-            'price' => $request->price,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'address' => $data['address'] ?? null,
+            'description' => $data['description'] ?? null,
+            'price' => $data['price'],
             'user_id' => Auth::id(),
-            'subcategory_id' => $request->subcategory_id
+            'subcategory_id' => $data['subcategory_id'] ?? null,
         ]);
         return $this->success($service, 'Service created successfully', 201);
     }
@@ -553,12 +555,8 @@ class ServiceApiController extends Controller
             'address.zip' => 'sometimes|string|max:20',
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric',
+            'subcategory_id' => 'sometimes|integer|exists:subcategories,id',
         ];
-
-        // Solo los administradores pueden cambiar la subcategoría
-        if (Gate::allows('is-admin')) {
-            $rules['subcategory_id'] = 'sometimes|integer|exists:subcategories,id';
-        }
 
         $data = $request->validate($rules);
 
