@@ -1,4 +1,5 @@
 <template>
+  <!-- Panel de perfil y edición de datos de usuario -->
   <div class="profile">
     <section class="panel">
       <header class="panel__header">
@@ -14,7 +15,7 @@
           <p><strong>Email:</strong> {{ auth.user?.email }}</p>
           <p><strong>Teléfono:</strong> {{ auth.user?.phone || '—' }}</p>
           <p><strong>Dirección:</strong> {{ auth.user?.address || '—' }}</p>
-          <p><strong>Rol:</strong> {{ auth.user?.role }}</p>
+          <p><strong>Tipo de cuenta:</strong> {{ auth.user?.role }}</p>
         </div>
 
         <form class="form" @submit.prevent="updateUser">
@@ -58,6 +59,7 @@
       </div>
     </section>
 
+    <!-- Sección Business: listado/creación/edición de servicios -->
     <template v-if="role === 'business'">
       <section class="panel">
         <header class="panel__header">
@@ -235,6 +237,7 @@
       </section>
     </template>
 
+    <!-- Sección User: Mi boda (servicios agrupados + edición pivot) -->
     <template v-else>
       <section class="panel">
         <header class="panel__header">
@@ -345,6 +348,9 @@ const role = computed(() => auth.user?.role)
 const fallbackImage =
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60&auto=compress'
 
+// -----------------------------
+// Bloque: Datos de usuario y update
+// -----------------------------
 const userForm = reactive({
   name: auth.user?.name || '',
   email: auth.user?.email || '',
@@ -384,6 +390,9 @@ const updateUser = async () => {
 }
 
 // Business: servicios
+// -----------------------------
+// Bloque: Servicios (perfil business/admin)
+// -----------------------------
 const services = ref([])
 const servicesLoading = ref(false)
 const servicesError = ref('')
@@ -487,6 +496,10 @@ const createService = async () => {
   }
 }
 
+
+//Esto hace que se actualice el servicio, primero limpia el payload y si no hay nada que actualizar no hace nada, 
+//luego hace la petición PUT y vuelve a cargar los servicios, 
+//lanzando errores si los hay.
 const updateService = async (id) => {
   servicesError.value = ''
   const payload = cleanPayload(serviceEdits[id] || {})
@@ -678,6 +691,9 @@ const weddingTotal = computed(() => {
   }, 0)
 })
 
+// -----------------------------
+// Utilidades
+// -----------------------------
 const cleanPayload = (obj) =>
   Object.fromEntries(
     Object.entries(obj).filter(
@@ -691,6 +707,9 @@ const statusSelectClass = (status) => {
   return 'status-select consulted'
 }
 
+// -----------------------------
+// Ciclo de vida
+// -----------------------------
 onMounted(async () => {
   if (role.value === 'business' || role.value === 'admin') {
     await fetchSubcategories()
