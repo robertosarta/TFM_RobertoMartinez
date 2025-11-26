@@ -9,24 +9,24 @@
     --weight-semibold: 600;
 
     /* Colores de texto */
-    --text-primary: #1f2933;
-    --text-muted: #56616f;
+    --text-primary: #2b2a33;
+    --text-muted: #6b6775;
     --text-inverse: #ffffff;
-    --text-accent: #b36b00;
+    --text-accent: #c45f47;
 
     /* Colores de fondo y superficies */
-    --bg-page: #f8f8f8;
+    --bg-page: #f7f3ef;
     --bg-surface: #ffffff;
-    --bg-muted: #f4f4f4;
+    --bg-muted: #f0e7df;
 
     /* Bordes y sombras */
-    --border: #e2e2e2;
-    --line: #e6e6e6;
-    --shadow-card: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
+    --border: #e3dcd3;
+    --line: #ebe4dc;
+    --shadow-card: 0 0.25rem 0.75rem rgba(31, 27, 21, 0.08);
 
     /* Paleta de estado */
-    --accent: #f0c572;
-    --accent-strong: #d49100;
+    --accent: #e9b7a8;
+    --accent-strong: #c45f47;
     --success: #0a7f3f;
     --warning: #b36b00;
     --danger: #b00020;

@@ -29,6 +29,13 @@ button {
     cursor: pointer;
     border-radius: var(--radius-2);
     padding: 0.4rem 0.8rem;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+}
+
+button:hover {
+    border-color: var(--accent-strong);
+    box-shadow: 0 0.25rem 0.6rem rgba(31, 27, 21, 0.08);
+    transform: translateY(-0.03rem);
 }
 
 /* Tipos de texto */
@@ -63,6 +70,10 @@ button {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-2);
+    border: 0.0625rem solid var(--line);
 }
 
 .panel {
@@ -91,6 +102,12 @@ button {
     padding: var(--space-4);
     background: var(--bg-surface);
     box-shadow: var(--shadow-card);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-0.05rem);
+    box-shadow: 0 0.4rem 1rem rgba(31, 27, 21, 0.12);
 }
 
 .thumbs {
@@ -155,10 +172,13 @@ button {
     padding: 0.5rem 1rem;
     font-size: var(--font-body);
     color: var(--text-primary);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, background 0.1s ease;
 }
 
 .btn:hover {
     border-color: var(--accent-strong);
+    box-shadow: 0 0.25rem 0.6rem rgba(31, 27, 21, 0.08);
+    transform: translateY(-0.03rem);
 }
 
 .btn.ghost {
@@ -183,12 +203,19 @@ button {
     font-size: var(--font-small);
     border: 0.0625rem solid transparent;
     cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
 .chip.active {
-    background: #fff4e0;
+    background: rgba(233, 183, 168, 0.25);
     border-color: var(--accent);
-    color: var(--warning);
+    color: var(--accent-strong);
+}
+
+.chip:hover {
+    background: rgba(233, 183, 168, 0.18);
+    border-color: var(--accent);
+    transform: translateY(-0.03rem);
 }
 
 /* Alertas y estados */
@@ -248,7 +275,7 @@ main {
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1.5rem;
-    background: #f6f6f6;
+    background: rgba(255, 255, 255, 0.9);
     border-bottom: 0.0625rem solid #e3e3e3;
     position: sticky;
     top: 0;
