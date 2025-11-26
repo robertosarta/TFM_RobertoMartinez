@@ -771,8 +771,7 @@ onMounted(async () => {
   if (role.value === 'business' || role.value === 'admin') {
     await fetchSubcategories()
     await fetchServices()
-  } else {
-    await loadWedding()
   }
+  await loadWedding()
 })
 </script>

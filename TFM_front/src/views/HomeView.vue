@@ -230,8 +230,8 @@ const attachToWedding = async (serviceId, price) => {
     return
   }
 
-  if (auth.user?.role !== 'user') {
-    actionError.value = 'Debes iniciar sesión como usuario para crear tu boda.'
+  if (auth.user?.role !== 'user' && auth.user?.role !== 'admin') {
+    actionError.value = 'Debes iniciar sesión como usuario o admin para crear tu boda.'
     return
   }
 

@@ -60,7 +60,14 @@ class WeddingApiController extends Controller
         $perPage = min((int) $request->query('per_page', 15), 50);
 
         if (Gate::allows('is-admin')) {
-            $weddings = Wedding::with('user')->paginate($perPage);
+            $query = Wedding::with('user');
+            // Si se envía user_id, filtra; si no, devuelve solo las bodas del admin actual.
+            if ($request->filled('user_id')) {
+                $query->where('user_id', $request->integer('user_id'));
+            } else {
+                $query->where('user_id', Auth::id());
+            }
+            $weddings = $query->paginate($perPage);
         } else {
             $user = Auth::user();
             $weddings = Wedding::where('user_id', $user->id)->paginate($perPage);
@@ -128,7 +135,7 @@ class WeddingApiController extends Controller
             'guest_count' => 'nullable|integer|min:0',
             'status' => 'nullable|string|in:gestionando,confirmada,cancelada,archivada',
         ]);
-
+        
         $data['user_id'] = Auth::id();
 
         if (!isset($data['status'])) {
