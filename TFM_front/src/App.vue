@@ -8,9 +8,3 @@ import AppNavbar from './components/AppNavbar.vue'
     <router-view />
   </main>
 </template>
-
-<style scoped>
-main {
-  padding: 1rem;
-}
-</style>

@@ -86,32 +86,3 @@ const submit = async () => {
   }
 }
 </script>
-
-<style scoped>
-.register {
-  max-width: 500px;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-input {
-  padding: 0.5rem;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-
-.error {
-  color: red;
-}
-</style>
