@@ -267,6 +267,36 @@
               {{ wedding.guest_count || '—' }}
             </p>
 
+            <div class="wedding-meta">
+              <div class="form mini-form">
+                <h4>Datos de la boda</h4>
+                <div class="form-row">
+                  <label>Estado</label>
+                  <select v-model="weddingEdit.status">
+                    <option value="">(sin estado)</option>
+                    <option v-for="opt in weddingStatusOptions" :key="opt" :value="opt">
+                      {{ opt }}
+                    </option>
+                    <option
+                      v-if="weddingEdit.status && !weddingStatusOptions.includes(weddingEdit.status)"
+                      :value="weddingEdit.status"
+                    >
+                      {{ weddingEdit.status }} (actual)
+                    </option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Número de invitados</label>
+                  <input v-model.number="weddingEdit.guest_count" type="number" min="0" />
+                </div>
+                <div class="form-actions">
+                  <button @click="updateWedding" :disabled="weddingLoading">
+                    {{ weddingLoading ? 'Guardando...' : 'Guardar boda' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div v-if="groupedServicesKeys.length === 0" class="muted">
               Aún no hay servicios añadidos a la boda.
             </div>
@@ -553,51 +583,69 @@ const wedding = ref(null) // objeto boda completo
 const weddingLoading = ref(false) // estado de carga
 const weddingError = ref('') // mensaje de error
 const weddingUpdates = reactive({}) // cambios en pivots de servicios
+const weddingEdit = reactive({ guest_count: '', status: '' }) // ediciones de la boda
 const serviceStatusOptions = ['consultado', 'confirmado', 'cancelado'] // opciones de estado
+const weddingStatusOptions = ['gestionando', 'planificada', 'confirmada', 'finalizada', 'cancelada']
 
-// Cargar boda del usuario 
+const setWeddingUpdates = (services = []) => {
+  Object.keys(weddingUpdates).forEach((key) => delete weddingUpdates[key])
+  services.forEach((svc) => {
+    weddingUpdates[svc.id] = {
+      price: svc.pivot?.price,
+      quantity: svc.pivot?.quantity ?? 1,
+      status: svc.pivot?.status || 'consultado',
+    }
+  })
+}
+
+const syncWeddingEdit = (data) => {
+  if (!data) {
+    weddingEdit.guest_count = ''
+    weddingEdit.status = ''
+    return
+  }
+  weddingEdit.guest_count = data.guest_count ?? ''
+  weddingEdit.status = data.status ?? ''
+}
+
+const fetchWeddingDetail = async (weddingId) => {
+  if (!weddingId) throw new Error('Wedding id missing')
+  const res = await api.get(`/weddings/${weddingId}`)
+  const data = res.data?.data
+  wedding.value = data
+  setWeddingUpdates(data?.services || [])
+  syncWeddingEdit(data)
+}
+
+// Cargar boda del usuario
 const loadWedding = async () => {
   weddingLoading.value = true
   weddingError.value = ''
   try {
-    const res = await api.get('/weddings', { params: { per_page: 1 } }) // obtener la boda del usuario
-    const list = res.data?.data?.data || [] // obtener la lista de bodas
-    if (list.length) {
-      wedding.value = list[0] 
-      await loadWeddingServices()
-    } else {
+    const res = await api.get('/weddings', { params: { per_page: 1 } })
+    const list = res.data?.data?.data || []
+    if (!list.length) {
       wedding.value = null
+      setWeddingUpdates([])
+      syncWeddingEdit(null)
+      return
     }
-  } catch (e) {
-    weddingError.value = e.response?.data?.message || 'Error al cargar boda'
-  } finally {
-    weddingLoading.value = false
-  }
-}
 
-const loadWeddingServices = async () => {
-  if (!wedding.value?.id) return 
-  weddingError.value = ''
-  try {
-    const res = await api.get(`/weddings/${wedding.value.id}`) 
-    wedding.value = res.data?.data
-    (wedding.value.services || []).forEach((svc) => {
-      weddingUpdates[svc.id] = {
-        price: svc.pivot?.price,
-        quantity: svc.pivot?.quantity ?? 1,
-        status: svc.pivot?.status || 'consultado',
-      }
-    })
+    const weddingId = list[0].id
+    await fetchWeddingDetail(weddingId)
   } catch (e) {
     if (e.response?.status === 404) {
       wedding.value = null
-      weddingError.value = 'No se ha encontrado tu boda. Crea una nueva.'
-      return
-    }
-    if (e.response?.status === 403) {
+      setWeddingUpdates([])
+      syncWeddingEdit(null)
+      weddingError.value = 'No se ha encontrado tu boda.'
+    } else if (e.response?.status === 403) {
       weddingError.value = 'No tienes permisos para ver esta boda.'
-      return
+    } else {
+      weddingError.value = e.response?.data?.message || 'Error al cargar la boda'
     }
+  } finally {
+    weddingLoading.value = false
   }
 }
 
@@ -606,10 +654,38 @@ const createWedding = async () => {
   weddingError.value = ''
   try {
     const res = await api.post('/weddings', { name: 'Mi boda', status: 'gestionando' })
-    wedding.value = res.data?.data
-    await loadWeddingServices()
+    const newWeddingId = res.data?.data?.id
+    if (newWeddingId) {
+      await fetchWeddingDetail(newWeddingId)
+    } else {
+      wedding.value = res.data?.data || null
+      setWeddingUpdates(wedding.value?.services || [])
+      syncWeddingEdit(wedding.value)
+    }
   } catch (e) {
     weddingError.value = e.response?.data?.message || 'Error al crear boda'
+  } finally {
+    weddingLoading.value = false
+  }
+}
+
+const updateWedding = async () => {
+  if (!wedding.value?.id) return
+  weddingLoading.value = true
+  weddingError.value = ''
+  const payload = cleanPayload({
+    guest_count: weddingEdit.guest_count === '' ? null : weddingEdit.guest_count,
+    status: weddingEdit.status,
+  })
+  if (!Object.keys(payload).length) {
+    weddingLoading.value = false
+    return
+  }
+  try {
+    await api.put(`/weddings/${wedding.value.id}`, payload)
+    await fetchWeddingDetail(wedding.value.id)
+  } catch (e) {
+    weddingError.value = e.response?.data?.message || 'Error al actualizar la boda'
   } finally {
     weddingLoading.value = false
   }
@@ -622,7 +698,7 @@ const saveWeddingService = async (serviceId) => {
   weddingLoading.value = true
   try {
     await api.put(`/weddings/${wedding.value.id}/services/${serviceId}`, payload)
-    await loadWeddingServices()
+    await fetchWeddingDetail(wedding.value.id)
   } catch (e) {
     weddingError.value = e.response?.data?.message || 'Error al guardar servicio'
   } finally {
@@ -636,7 +712,7 @@ const detachWeddingService = async (serviceId) => {
   weddingError.value = ''
   try {
     await api.delete(`/weddings/${wedding.value.id}/services/${serviceId}`)
-    await loadWeddingServices()
+    await fetchWeddingDetail(wedding.value.id)
   } catch (e) {
     weddingError.value = e.response?.data?.message || 'Error al quitar servicio'
   } finally {
@@ -909,6 +985,16 @@ button.ghost {
   border-radius: 6px;
   border: 0.11rem solid #686868;
   box-shadow: none;
+}
+
+.wedding-meta {
+  margin-bottom: 1rem;
+}
+
+.wedding-meta .form-row input,
+.wedding-meta .form-row select {
+  width: 240px;
+  max-width: 100%;
 }
 
 .status-select {
