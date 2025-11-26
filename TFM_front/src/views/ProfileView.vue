@@ -470,6 +470,7 @@ const createService = async () => {
     const res = await api.post('/services', payload)
     const newServiceId = res.data?.data?.id
 
+    // Subir imagen si hay
     if (newServiceId && (createServiceImage.url || createServiceImage.file)) {
       const form = new FormData()
       if (createServiceImage.file) form.append('image', createServiceImage.file)
@@ -477,6 +478,7 @@ const createService = async () => {
       await api.post(`/services/${newServiceId}/images`, form)
     }
 
+    // Reset formulario y recargar servicios
     Object.assign(createServiceForm, {
       name: '',
       email: auth.user?.email || '',
@@ -497,7 +499,7 @@ const createService = async () => {
 }
 
 
-//Esto hace que se actualice el servicio, primero limpia el payload y si no hay nada que actualizar no hace nada, 
+//Esto hace que se actualice el servicio, primero limpia el payload, si no hay nada que actualizar no hace nada, 
 //luego hace la petición PUT y vuelve a cargar los servicios, 
 //lanzando errores si los hay.
 const updateService = async (id) => {
@@ -547,20 +549,21 @@ const onCreateFileChange = (event) => {
 }
 
 // User: Mi boda
-const wedding = ref(null)
-const weddingLoading = ref(false)
-const weddingError = ref('')
-const weddingUpdates = reactive({})
-const serviceStatusOptions = ['consultado', 'confirmado', 'cancelado']
+const wedding = ref(null) // objeto boda completo
+const weddingLoading = ref(false) // estado de carga
+const weddingError = ref('') // mensaje de error
+const weddingUpdates = reactive({}) // cambios en pivots de servicios
+const serviceStatusOptions = ['consultado', 'confirmado', 'cancelado'] // opciones de estado
 
+// Cargar boda del usuario 
 const loadWedding = async () => {
   weddingLoading.value = true
   weddingError.value = ''
   try {
-    const res = await api.get('/weddings', { params: { per_page: 1 } })
-    const list = res.data?.data?.data || []
+    const res = await api.get('/weddings', { params: { per_page: 1 } }) // obtener la boda del usuario
+    const list = res.data?.data?.data || [] // obtener la lista de bodas
     if (list.length) {
-      wedding.value = list[0]
+      wedding.value = list[0] 
       await loadWeddingServices()
     } else {
       wedding.value = null
@@ -573,10 +576,10 @@ const loadWedding = async () => {
 }
 
 const loadWeddingServices = async () => {
-  if (!wedding.value?.id) return
+  if (!wedding.value?.id) return 
   weddingError.value = ''
   try {
-    const res = await api.get(`/weddings/${wedding.value.id}`)
+    const res = await api.get(`/weddings/${wedding.value.id}`) 
     wedding.value = res.data?.data
     (wedding.value.services || []).forEach((svc) => {
       weddingUpdates[svc.id] = {
@@ -586,7 +589,6 @@ const loadWeddingServices = async () => {
       }
     })
   } catch (e) {
-    // Intento de fallback: cargar solo los servicios de la boda
     if (e.response?.status === 404) {
       wedding.value = null
       weddingError.value = 'No se ha encontrado tu boda. Crea una nueva.'
@@ -595,27 +597,6 @@ const loadWeddingServices = async () => {
     if (e.response?.status === 403) {
       weddingError.value = 'No tienes permisos para ver esta boda.'
       return
-    }
-
-    try {
-      const servicesRes = await api.get(`/weddings/${wedding.value.id}/services`)
-      const services = servicesRes.data?.data || []
-      wedding.value = wedding.value || {}
-      wedding.value.services = services
-      services.forEach((svc) => {
-        weddingUpdates[svc.id] = {
-          price: svc.pivot?.price,
-          quantity: svc.pivot?.quantity ?? 1,
-          status: svc.pivot?.status || 'consultado',
-        }
-      })
-      // Fallback exitoso: no mostrar mensaje de error
-      weddingError.value = ''
-    } catch (fallbackErr) {
-      weddingError.value =
-        fallbackErr.response?.data?.message ||
-        e.response?.data?.message ||
-        'Error al cargar servicios de la boda'
     }
   }
 }
