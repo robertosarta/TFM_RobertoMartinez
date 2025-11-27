@@ -59,8 +59,8 @@
       </div>
     </section>
 
-    <!-- Sección Business: listado/creación/edición de servicios -->
-    <template v-if="role === 'business'">
+    <!-- Servicios (business/admin): listado/creación/edición de servicios -->
+    <template v-if="role === 'business' || role === 'admin'">
       <section class="panel">
         <header class="panel__header">
           <div>
@@ -212,9 +212,9 @@
                     <label>Archivo</label>
                     <input type="file" accept="image/*" @change="onFileChange(svc.id, $event)" />
                   </div>
-                  <div class="form-actions">
+                <div class="form-actions">
                     <button @click="addServiceImage(svc.id)" :disabled="servicesLoading">
-                      Añadir
+                      Añadir imagen
                     </button>
                   </div>
                 </div>
@@ -237,8 +237,8 @@
       </section>
     </template>
 
-    <!-- Sección User: Mi boda (servicios agrupados + edición pivot) -->
-    <template v-else>
+    <!-- Sección User/Admin: Mi boda (servicios agrupados + edición pivot) -->
+    <template v-if="role !== 'business'">
       <section class="panel">
         <header class="panel__header">
           <div>
