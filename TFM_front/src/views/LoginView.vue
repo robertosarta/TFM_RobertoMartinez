@@ -3,10 +3,10 @@
     <h2>Iniciar sesión</h2>
 
     <form @submit.prevent="submit">
-      <input v-model="email" type="email" placeholder="Email" />
-      <input v-model="password" type="password" placeholder="Password" />
+      <input v-model="email" type="email" placeholder="Email" class="form__input" />
+      <input v-model="password" type="password" placeholder="Password" class="form__input" />
 
-      <button type="submit">Entrar</button>
+      <button type="submit" class="btn btn--primary">Entrar</button>
     </form>
 
     <p v-if="error">{{ error }}</p>

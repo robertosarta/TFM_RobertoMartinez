@@ -3,28 +3,29 @@
     <h2>Registro</h2>
 
     <form @submit.prevent="submit">
-      <input v-model="name" type="text" placeholder="Nombre completo" required />
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input v-model="phone" type="tel" placeholder="Teléfono (opcional)" />
-      <input v-model="address" type="text" placeholder="Dirección (opcional)" />
+      <input v-model="name" type="text" placeholder="Nombre completo" required class="form__input" />
+      <input v-model="email" type="email" placeholder="Email" required class="form__input" />
+      <input v-model="phone" type="tel" placeholder="Teléfono (opcional)" class="form__input" />
+      <input v-model="address" type="text" placeholder="Dirección (opcional)" class="form__input" />
 
-      <input v-model="password" type="password" placeholder="Contraseña" required />
+      <input v-model="password" type="password" placeholder="Contraseña" required class="form__input" />
       <input
         v-model="passwordConfirmation"
         type="password"
         placeholder="Confirmar contraseña"
         required
+        class="form__input"
       />
 
-      <label class="role-select">
+      <label>
         Tipo de cuenta:
-        <select v-model="role">
+        <select v-model="role" class="form__select">
           <option value="user">Usuario</option>
           <option value="business">Negocio</option>
         </select>
       </label>
 
-      <button type="submit" :disabled="loading">
+      <button type="submit" class="btn btn--primary" :disabled="loading">
         {{ loading ? 'Registrando...' : 'Registrarse' }}
       </button>
     </form>

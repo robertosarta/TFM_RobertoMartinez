@@ -14,8 +14,7 @@
           <button
             v-for="cat in categories"
             :key="cat.id"
-            class="chip"
-            :class="{ active: selectedCategoryId === cat.id }"
+            :class="['chip', { 'chip--active': selectedCategoryId === cat.id }]"
             @click="toggleCategory(cat.id)"
           >
             {{ cat.name }}
@@ -29,8 +28,7 @@
           <button
             v-for="sub in filteredSubcategories"
             :key="sub.id"
-            class="chip"
-            :class="{ active: selectedSubcategoryId === sub.id }"
+            :class="['chip', { 'chip--active': selectedSubcategoryId === sub.id }]"
             @click="toggleSubcategory(sub.id)"
           >
             {{ sub.name }}
@@ -61,7 +59,7 @@
             </p>
           </RouterLink>
           <button
-            class="add-btn"
+            class="btn btn--ghost btn--small"
             :disabled="attachLoading === svc.id"
             @click="attachToWedding(svc.id, svc.price)"
           >
@@ -71,7 +69,7 @@
       </div>
 
       <div class="services-actions" v-if="canLoadMore">
-        <button @click="loadMore">Ver más</button>
+        <button class="btn btn--ghost" @click="loadMore">Ver más</button>
       </div>
     </section>
   </div>

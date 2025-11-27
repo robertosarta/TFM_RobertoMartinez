@@ -1,20 +1,22 @@
 <template>
   <nav class="navbar">
     <div class="navbar__brand">
-      <RouterLink to="/" @click="goHome">Bodas</RouterLink>
+      <RouterLink to="/" class="navbar__link" @click="goHome">Bodas</RouterLink>
     </div>
 
     <div class="navbar__links">
-      <RouterLink to="/" @click="goHome">Inicio</RouterLink>
+      <RouterLink to="/" class="navbar__link" @click="goHome">Inicio</RouterLink>
 
       <template v-if="!auth.token">
-        <RouterLink to="/login">Login</RouterLink>
-        <RouterLink to="/register">Registro</RouterLink>
+        <RouterLink to="/login" class="navbar__link">Login</RouterLink>
+        <RouterLink to="/register" class="navbar__link">Registro</RouterLink>
       </template>
 
       <template v-else>
-        <RouterLink to="/profile">Perfil</RouterLink>
-        <button type="button" @click="handleLogout">Salir</button>
+        <RouterLink to="/profile" class="navbar__link">Perfil</RouterLink>
+        <button type="button" class="btn btn--ghost btn--small navbar__button" @click="handleLogout">
+          Salir
+        </button>
       </template>
     </div>
   </nav>

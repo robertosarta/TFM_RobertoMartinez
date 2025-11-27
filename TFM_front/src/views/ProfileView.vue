@@ -22,23 +22,28 @@
           <h3>Actualizar datos</h3>
           <div class="form-row">
             <label>Nombre</label>
-            <input v-model="userForm.name" type="text" />
+            <input v-model="userForm.name" type="text" class="form__input" />
           </div>
           <div class="form-row">
             <label>Email</label>
-            <input v-model="userForm.email" type="email" />
+            <input v-model="userForm.email" type="email" class="form__input" />
           </div>
           <div class="form-row">
             <label>Teléfono</label>
-            <input v-model="userForm.phone" type="text" />
+            <input v-model="userForm.phone" type="text" class="form__input" />
           </div>
           <div class="form-row">
             <label>Dirección</label>
-            <input v-model="userForm.address" type="text" />
+            <input v-model="userForm.address" type="text" class="form__input" />
           </div>
           <div class="form-row">
             <label>Nueva contraseña</label>
-            <input v-model="userForm.password" type="password" autocomplete="new-password" />
+            <input
+              v-model="userForm.password"
+              type="password"
+              autocomplete="new-password"
+              class="form__input"
+            />
           </div>
           <div class="form-row">
             <label>Confirmar contraseña</label>
@@ -46,10 +51,11 @@
               v-model="userForm.password_confirmation"
               type="password"
               autocomplete="new-password"
+              class="form__input"
             />
           </div>
           <div class="form-actions">
-            <button type="submit" :disabled="userLoading">
+            <button class="btn btn--primary" type="submit" :disabled="userLoading">
               {{ userLoading ? 'Guardando...' : 'Guardar cambios' }}
             </button>
             <span class="status ok" v-if="userMessage">{{ userMessage }}</span>
@@ -68,10 +74,10 @@
             <p class="muted">Crea, actualiza y consulta tus servicios</p>
           </div>
           <div class="actions">
-            <button @click="toggleCreateService" class="btn ghost">
+            <button @click="toggleCreateService" class="btn btn--ghost">
               {{ showCreateService ? 'Cerrar' : 'Crear servicio' }}
             </button>
-            <button @click="fetchServices" :disabled="servicesLoading">
+            <button class="btn btn--ghost btn--small" @click="fetchServices" :disabled="servicesLoading">
               {{ servicesLoading ? 'Actualizando...' : 'Refrescar' }}
             </button>
           </div>
@@ -83,23 +89,29 @@
             <div class="grid-2">
               <div class="form-row">
                 <label>Nombre*</label>
-                <input v-model="createServiceForm.name" type="text" required />
+                <input v-model="createServiceForm.name" type="text" required class="form__input" />
               </div>
               <div class="form-row">
                 <label>Email*</label>
-                <input v-model="createServiceForm.email" type="email" required />
+                <input v-model="createServiceForm.email" type="email" required class="form__input" />
               </div>
               <div class="form-row">
                 <label>Teléfono*</label>
-                <input v-model="createServiceForm.phone" type="text" required />
+                <input v-model="createServiceForm.phone" type="text" required class="form__input" />
               </div>
               <div class="form-row">
                 <label>Precio*</label>
-                <input v-model.number="createServiceForm.price" type="number" step="0.01" required />
+                <input
+                  v-model.number="createServiceForm.price"
+                  type="number"
+                  step="0.01"
+                  required
+                  class="form__input"
+                />
               </div>
               <div class="form-row">
                 <label>Subcategoría</label>
-                <select v-model="createServiceForm.subcategory_id">
+                <select v-model="createServiceForm.subcategory_id" class="form__select">
                   <option value="">(sin subcategoría)</option>
                   <option v-for="sub in subcategories" :key="sub.id" :value="sub.id">
                     {{ sub.name }}<span v-if="sub.category"> · {{ sub.category.name }}</span>
@@ -108,33 +120,38 @@
               </div>
               <div class="form-row">
                 <label>Ciudad</label>
-                <input v-model="createServiceForm.address.city" type="text" />
+                <input v-model="createServiceForm.address.city" type="text" class="form__input" />
               </div>
               <div class="form-row">
                 <label>Calle</label>
-                <input v-model="createServiceForm.address.street" type="text" />
+                <input v-model="createServiceForm.address.street" type="text" class="form__input" />
               </div>
               <div class="form-row">
                 <label>CP</label>
-                <input v-model="createServiceForm.address.zip" type="text" />
+                <input v-model="createServiceForm.address.zip" type="text" class="form__input" />
               </div>
             </div>
             <div class="form-row">
               <label>Descripción</label>
-              <textarea v-model="createServiceForm.description" rows="3"></textarea>
+              <textarea v-model="createServiceForm.description" rows="3" class="form__textarea"></textarea>
             </div>
             <div class="grid-2">
               <div class="form-row">
                 <label>URL imagen (opcional)</label>
-                <input v-model="createServiceImage.url" type="url" placeholder="https://..." />
+                <input
+                  v-model="createServiceImage.url"
+                  type="url"
+                  placeholder="https://..."
+                  class="form__input"
+                />
               </div>
               <div class="form-row">
                 <label>Archivo imagen (opcional)</label>
-                <input type="file" accept="image/*" @change="onCreateFileChange" />
+                <input type="file" accept="image/*" @change="onCreateFileChange" class="form__input" />
               </div>
             </div>
             <div class="form-actions">
-              <button type="submit" :disabled="servicesLoading">
+              <button class="btn btn--primary" type="submit" :disabled="servicesLoading">
                 {{ servicesLoading ? 'Creando...' : 'Crear servicio' }}
               </button>
               <span class="status error" v-if="servicesError">{{ servicesError }}</span>
@@ -176,15 +193,20 @@
                   <h4>Editar servicio</h4>
                 <div class="form-row">
                   <label>Nombre</label>
-                  <input v-model="serviceEdits[svc.id].name" type="text" />
+                  <input v-model="serviceEdits[svc.id].name" type="text" class="form__input" />
                 </div>
                 <div class="form-row">
                   <label>Precio</label>
-                  <input v-model.number="serviceEdits[svc.id].price" type="number" step="0.01" />
+                  <input
+                    v-model.number="serviceEdits[svc.id].price"
+                    type="number"
+                    step="0.01"
+                    class="form__input"
+                  />
                 </div>
                 <div class="form-row">
                   <label>Subcategoría</label>
-                  <select v-model="serviceEdits[svc.id].subcategory_id">
+                  <select v-model="serviceEdits[svc.id].subcategory_id" class="form__select">
                     <option value="">(sin subcategoría)</option>
                     <option v-for="sub in subcategories" :key="sub.id" :value="sub.id">
                       {{ sub.name }}<span v-if="sub.category"> · {{ sub.category.name }}</span>
@@ -193,13 +215,21 @@
                 </div>
                 <div class="form-row">
                   <label>Descripción</label>
-                  <textarea v-model="serviceEdits[svc.id].description" rows="2"></textarea>
+                  <textarea v-model="serviceEdits[svc.id].description" rows="2" class="form__textarea"></textarea>
                 </div>
                   <div class="form-actions">
-                    <button @click="updateService(svc.id)" :disabled="servicesLoading">
+                    <button
+                      class="btn btn--primary btn--small"
+                      @click="updateService(svc.id)"
+                      :disabled="servicesLoading"
+                    >
                       Guardar
                     </button>
-                    <button class="btn danger" @click="deleteService(svc.id)" :disabled="servicesLoading">
+                    <button
+                      class="btn btn--danger btn--small"
+                      @click="deleteService(svc.id)"
+                      :disabled="servicesLoading"
+                    >
                       Eliminar servicio
                     </button>
                   </div>
@@ -209,14 +239,24 @@
                   <h4>Subir imagen</h4>
                   <div class="form-row">
                     <label>URL</label>
-                    <input v-model="imageUrls[svc.id]" type="url" placeholder="https://..." />
+                    <input
+                      v-model="imageUrls[svc.id]"
+                      type="url"
+                      placeholder="https://..."
+                      class="form__input"
+                    />
                   </div>
                   <div class="form-row">
                     <label>Archivo</label>
-                    <input type="file" accept="image/*" @change="onFileChange(svc.id, $event)" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      @change="onFileChange(svc.id, $event)"
+                      class="form__input"
+                    />
                   </div>
                 <div class="form-actions">
-                    <button @click="addServiceImage(svc.id)" :disabled="servicesLoading">
+                    <button class="btn btn--ghost btn--small" @click="addServiceImage(svc.id)" :disabled="servicesLoading">
                       Añadir imagen
                     </button>
                   </div>
@@ -249,7 +289,7 @@
             <p class="muted">Organiza tus servicios por categoría</p>
           </div>
           <div class="actions">
-            <button @click="reloadWedding" :disabled="weddingLoading">
+            <button class="btn btn--ghost btn--small" @click="reloadWedding" :disabled="weddingLoading">
               {{ weddingLoading ? 'Actualizando...' : 'Refrescar' }}
             </button>
           </div>
@@ -261,7 +301,9 @@
           <div v-if="weddingLoading" class="muted">Cargando boda...</div>
 
           <div v-else-if="!wedding">
-            <button @click="createWedding" :disabled="weddingLoading">Crear mi boda</button>
+            <button class="btn btn--primary" @click="createWedding" :disabled="weddingLoading">
+              Crear mi boda
+            </button>
           </div>
 
           <div v-else>
@@ -275,7 +317,7 @@
                 <h4>Datos de la boda</h4>
                 <div class="form-row">
                   <label>Estado</label>
-                  <select v-model="weddingEdit.status">
+                  <select v-model="weddingEdit.status" class="form__select">
                     <option value="">(sin estado)</option>
                     <option v-for="opt in weddingStatusOptions" :key="opt" :value="opt">
                       {{ opt }}
@@ -290,10 +332,15 @@
                 </div>
                 <div class="form-row">
                   <label>Número de invitados</label>
-                  <input v-model.number="weddingEdit.guest_count" type="number" min="0" />
+                  <input
+                    v-model.number="weddingEdit.guest_count"
+                    type="number"
+                    min="0"
+                    class="form__input"
+                  />
                 </div>
                 <div class="form-actions">
-                  <button @click="updateWedding" :disabled="weddingLoading">
+                  <button class="btn btn--primary btn--small" @click="updateWedding" :disabled="weddingLoading">
                     {{ weddingLoading ? 'Guardando...' : 'Guardar boda' }}
                   </button>
                 </div>
@@ -324,6 +371,7 @@
                       v-model.number="weddingUpdates[svc.id].price"
                         type="number"
                         step="0.01"
+                        class="form__input"
                       />
                     </label>
                     <label>
@@ -332,6 +380,7 @@
                         v-model.number="weddingUpdates[svc.id].quantity"
                         type="number"
                         min="1"
+                        class="form__input"
                       />
                     </label>
                   <label>
@@ -339,16 +388,25 @@
                     <select
                       v-model="weddingUpdates[svc.id].status"
                       :class="statusSelectClass(weddingUpdates[svc.id].status)"
+                      class="form__select"
                     >
                       <option v-for="opt in serviceStatusOptions" :key="opt" :value="opt">
                         {{ opt }}
                       </option>
                     </select>
                   </label>
-                  <button @click="saveWeddingService(svc.id)" :disabled="weddingLoading">
+                  <button
+                    class="btn btn--primary btn--small"
+                    @click="saveWeddingService(svc.id)"
+                    :disabled="weddingLoading"
+                  >
                     Guardar
                   </button>
-                  <button class="danger" @click="detachWeddingService(svc.id)" :disabled="weddingLoading">
+                  <button
+                    class="btn btn--danger btn--small"
+                    @click="detachWeddingService(svc.id)"
+                    :disabled="weddingLoading"
+                  >
                     Quitar
                   </button>
                 </div>

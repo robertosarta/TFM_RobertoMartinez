@@ -11,9 +11,13 @@
             class="carousel__image"
           />
           <div class="carousel__controls" v-if="images.length > 1">
-            <button @click="prevImage" aria-label="Anterior">&#8592;</button>
+            <button class="btn btn--ghost btn--small" @click="prevImage" aria-label="Anterior">
+              &#8592;
+            </button>
             <span>{{ currentImage + 1 }} / {{ images.length }}</span>
-            <button @click="nextImage" aria-label="Siguiente">&#8594;</button>
+            <button class="btn btn--ghost btn--small" @click="nextImage" aria-label="Siguiente">
+              &#8594;
+            </button>
           </div>
         </div>
         <div v-else class="carousel__placeholder">
@@ -46,26 +50,31 @@
           <form @submit.prevent="sendInquiry">
             <label>
               Nombre y apellidos
-              <input v-model="inquiry.name" type="text" required />
+              <input v-model="inquiry.name" type="text" required class="form__input" />
             </label>
             <label>
               Teléfono
-              <input v-model="inquiry.phone" type="tel" />
+              <input v-model="inquiry.phone" type="tel" class="form__input" />
             </label>
             <label>
               Email
-              <input v-model="inquiry.email" type="email" required />  
+              <input v-model="inquiry.email" type="email" required class="form__input" />  
               <!-- Quizas redundante. Por si escribe desde otro correo distinto a donde quiere recibir la info -->
             </label>
             <label>
               Fecha de la boda
-              <input v-model="inquiry.date" type="date" />
+              <input v-model="inquiry.date" type="date" class="form__input" />
             </label>
             <label>
               Mensaje
-              <textarea v-model="inquiry.message" rows="3" placeholder="Tus dudas..."></textarea>
+              <textarea
+                v-model="inquiry.message"
+                rows="3"
+                placeholder="Tus dudas..."
+                class="form__textarea"
+              ></textarea>
             </label>
-            <button type="submit">Enviar solicitud</button>
+            <button type="submit" class="btn btn--primary btn--small">Enviar solicitud</button>
           </form>
         </div>
       </aside>
@@ -81,16 +90,22 @@
           ref="commentTextarea"
           @input="resizeCommentBox"
           :disabled="!auth.token || commentLoading"
+          class="form__textarea"
         ></textarea>
         <div class="comment-actions">
           <label class="rating-select" aria-label="Puntuación">
             <span aria-hidden="true">⭐</span>
-            <select v-model.number="commentForm.rating" :disabled="!auth.token || commentLoading">
+            <select
+              v-model.number="commentForm.rating"
+              :disabled="!auth.token || commentLoading"
+              class="form__select"
+            >
               <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
             </select>
           </label>
           <button
             type="button"
+            class="btn btn--primary btn--small"
             :disabled="!auth.token || commentLoading || !commentForm.comment"
             @click="submitComment"
           >
@@ -115,7 +130,7 @@
     </section>
   </div>
 
-  <div v-else class="loading">
+  <div v-else>
     <p v-if="loading">Cargando servicio...</p>
     <p v-else class="error">{{ error || 'Servicio no encontrado' }}</p>
   </div>
