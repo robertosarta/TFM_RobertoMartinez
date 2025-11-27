@@ -38,6 +38,19 @@ button:hover {
     transform: translateY(-0.03rem);
 }
 
+button.danger,
+.btn.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+button.danger:hover:not(:disabled),
+.btn.danger:hover:not(:disabled) {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(176, 0, 32, 0.08);
+}
+
 /* Tipos de texto */
 /* No usadas actualmente:
 .text-title {

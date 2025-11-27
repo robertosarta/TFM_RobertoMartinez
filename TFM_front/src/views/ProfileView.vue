@@ -199,6 +199,9 @@
                     <button @click="updateService(svc.id)" :disabled="servicesLoading">
                       Guardar
                     </button>
+                    <button class="btn danger" @click="deleteService(svc.id)" :disabled="servicesLoading">
+                      Eliminar servicio
+                    </button>
                   </div>
                 </div>
 
@@ -542,6 +545,20 @@ const updateService = async (id) => {
     await fetchServices()
   } catch (e) {
     servicesError.value = e.response?.data?.message || 'Error al actualizar servicio'
+  } finally {
+    servicesLoading.value = false
+  }
+}
+
+const deleteService = async (id) => {
+  if (!id) return
+  servicesError.value = ''
+  servicesLoading.value = true
+  try {
+    await api.delete(`/services/${id}`)
+    await fetchServices()
+  } catch (e) {
+    servicesError.value = e.response?.data?.message || 'Error al eliminar servicio'
   } finally {
     servicesLoading.value = false
   }
