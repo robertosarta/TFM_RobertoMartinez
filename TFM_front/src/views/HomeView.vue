@@ -55,7 +55,7 @@
             <h3>{{ svc.name }}</h3>
             <p class="desc">{{ svc.description }}</p>
             <p class="meta">
-              <span>Precio: {{ svc.price }}</span>
+              <span>Precio: {{ euro(svc.price) }}</span>
             </p>
           </RouterLink>
           <button
@@ -208,6 +208,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('reset-home-filters', handleResetFilters)
 })
+
+const euro = (value) => `${Number(value ?? 0).toFixed(2)} €`
 
 // Mostrar botón para usuarios logueados con rol user y también para no logueados (redirige a login).
 const ensureWedding = async () => {

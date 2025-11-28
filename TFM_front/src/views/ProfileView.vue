@@ -101,13 +101,16 @@
               </div>
               <div class="form-row">
                 <label>Precio*</label>
-                <input
-                  v-model.number="createServiceForm.price"
-                  type="number"
-                  step="0.01"
-                  required
-                  class="form__input"
-                />
+                <div class="input-prefix">
+                  <span class="input-prefix__symbol">€</span>
+                  <input
+                    v-model.number="createServiceForm.price"
+                    type="number"
+                    step="0.01"
+                    required
+                    class="form__input"
+                  />
+                </div>
               </div>
               <div class="form-row">
                 <label>Subcategoría</label>
@@ -177,7 +180,7 @@
               </header>
 
               <div class="card__body">
-                <p class="muted">Precio: {{ svc.price }}</p>
+                <p class="muted">Precio: {{ euro(svc.price) }}</p>
                 <p class="muted">Email: {{ svc.email }}</p>
                 <p class="muted">Tel: {{ svc.phone }}</p>
                 <div class="thumbs" v-if="svc.images?.length">
@@ -197,12 +200,15 @@
                 </div>
                 <div class="form-row">
                   <label>Precio</label>
-                  <input
-                    v-model.number="serviceEdits[svc.id].price"
-                    type="number"
-                    step="0.01"
-                    class="form__input"
-                  />
+                  <div class="input-prefix">
+                    <span class="input-prefix__symbol">€</span>
+                    <input
+                      v-model.number="serviceEdits[svc.id].price"
+                      type="number"
+                      step="0.01"
+                      class="form__input"
+                    />
+                  </div>
                 </div>
                 <div class="form-row">
                   <label>Subcategoría</label>
@@ -367,13 +373,16 @@
                 <div class="wedding-service__controls">
                   <label>
                     Precio pactado
-                    <input
-                      v-model.number="weddingUpdates[svc.id].price"
+                    <div class="input-prefix">
+                      <span class="input-prefix__symbol">€</span>
+                      <input
+                        v-model.number="weddingUpdates[svc.id].price"
                         type="number"
                         step="0.01"
                         class="form__input"
                       />
-                    </label>
+                    </div>
+                  </label>
                     <label>
                       Cantidad
                       <input
@@ -412,7 +421,7 @@
                 </div>
                 <div class="pivot-meta">
                   <span>Actual: {{ svc.pivot?.status || '—' }}</span>
-                  <span>Precio: {{ svc.pivot?.price ?? 0 }}</span>
+                  <span>Precio: {{ euro(svc.pivot?.price ?? 0) }}</span>
                   <span>Cant: {{ svc.pivot?.quantity ?? 1 }}</span>
                   </div>
                 </div>
@@ -420,7 +429,7 @@
             </div>
 
             <div class="total">
-              Total estimado: {{ weddingTotal.toFixed(2) }}
+              Total estimado: {{ euro(weddingTotal) }}
             </div>
           </div>
         </div>
@@ -826,6 +835,8 @@ const weddingTotal = computed(() => {
 // -----------------------------
 // Utilidades
 // -----------------------------
+const euro = (value) => `${Number(value ?? 0).toFixed(2)} €` //para formatear valores monetarios a euros
+
 const cleanPayload = (obj) =>
   Object.fromEntries(
     Object.entries(obj).filter(

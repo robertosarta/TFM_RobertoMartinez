@@ -26,7 +26,7 @@
       </div>
 
       <aside class="service__info">
-        <p class="service__price">Precio: {{ service.price }}</p>
+        <p class="service__price">Precio: {{ euro(service.price) }}</p>
         <p class="service__meta">
           <span v-if="service.subcategory">
             {{ service.subcategory.name }}
@@ -174,6 +174,7 @@ const fallbackImage =
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60&auto=compress'
 
 const serviceId = computed(() => route.params.id) //cogemos el id que aparece en la url
+const euro = (value) => `${Number(value ?? 0).toFixed(2)} €`
 
 const fetchService = async () => {
   loading.value = true
