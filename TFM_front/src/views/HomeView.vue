@@ -55,7 +55,7 @@
             <h3>{{ svc.name }}</h3>
             <p class="desc">{{ svc.description }}</p>
             <p class="meta">
-              <span>Precio: {{ euro(svc.price) }}</span>
+              <span>Precios desde: {{ euro(svc.price) }}</span>
             </p>
           </RouterLink>
           <button

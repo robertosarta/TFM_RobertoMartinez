@@ -164,6 +164,7 @@ main {
     border: 0.0625rem solid var(--line);
 }
 
+/* Separación entre secciones cuando hay una seccion tras otra */
 .section + .section {
     margin-top: var(--space-4);
 }
@@ -390,8 +391,8 @@ main {
 }
 
 .navbar__logo {
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
     object-fit: contain;
     display: block;
 }
@@ -507,6 +508,10 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
     gap: 1rem;
     margin-top: 0.5rem;
+}
+
+.services-grid .card > .btn {
+    margin-top: 1rem;
 }
 
 .services-actions {

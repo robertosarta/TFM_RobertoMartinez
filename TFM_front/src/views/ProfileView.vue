@@ -180,7 +180,7 @@
               </header>
 
               <div class="card__body">
-                <p class="muted">Precio: {{ euro(svc.price) }}</p>
+                <p class="muted">Precios desde: {{ euro(svc.price) }}</p>
                 <p class="muted">Email: {{ svc.email }}</p>
                 <p class="muted">Tel: {{ svc.phone }}</p>
                 <div class="thumbs" v-if="svc.images?.length">
@@ -199,7 +199,7 @@
                   <input v-model="serviceEdits[svc.id].name" type="text" class="form__input" />
                 </div>
                 <div class="form-row">
-                  <label>Precio</label>
+                  <label>Precios desde</label>
                   <div class="input-prefix">
                     <span class="input-prefix__symbol">€</span>
                     <input
@@ -421,7 +421,7 @@
                 </div>
                 <div class="pivot-meta">
                   <span>Actual: {{ svc.pivot?.status || '—' }}</span>
-                  <span>Precio: {{ euro(svc.pivot?.price ?? 0) }}</span>
+                  <span>Precios desde: {{ euro(svc.pivot?.price ?? 0) }}</span>
                   <span>Cant: {{ svc.pivot?.quantity ?? 1 }}</span>
                   </div>
                 </div>

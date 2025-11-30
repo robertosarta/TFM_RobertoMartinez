@@ -26,7 +26,7 @@
       </div>
 
       <aside class="service__info">
-        <p class="service__price">Precio: {{ euro(service.price) }}</p>
+        <p class="service__price">Precios desde: {{ euro(service.price) }}</p>
         <p class="service__meta">
           <span v-if="service.subcategory">
             {{ service.subcategory.name }}
