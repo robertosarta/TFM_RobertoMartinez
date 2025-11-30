@@ -518,6 +518,15 @@ main {
     margin-top: 1rem;
 }
 
+.contact-links a {
+    color: #0b6cff;
+    text-decoration: underline;
+}
+
+.contact-links a:hover {
+    color: #084dbf;
+}
+
 /* -------------------- */
 /* SERVICE DETAIL */
 /* -------------------- */

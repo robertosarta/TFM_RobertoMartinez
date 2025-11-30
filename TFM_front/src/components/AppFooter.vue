@@ -5,10 +5,10 @@
       <span class="footer__title">Mi Boda</span>
     </div>
     <div class="footer__links">
-      <a href="#contacto" class="footer__link">Contacto</a>
+      <RouterLink to="/contacto" class="footer__link">Contacto</RouterLink>
       <RouterLink to="/quienes-somos" class="footer__link">Quiénes somos</RouterLink>
-      <a href="#cookies" class="footer__link">Política de cookies</a>
-      <a href="#privacidad" class="footer__link">Aviso de privacidad</a>
+      <RouterLink to="/cookies" class="footer__link">Política de cookies</RouterLink>
+      <RouterLink to="/privacidad" class="footer__link">Aviso de privacidad</RouterLink>
     </div>
   </footer>
 </template>
