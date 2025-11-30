@@ -263,7 +263,7 @@
                   </div>
                 <div class="form-actions">
                     <button class="btn btn--ghost btn--small" @click="addServiceImage(svc.id)" :disabled="servicesLoading">
-                      Añadir imagen
+                      Subir imagen
                     </button>
                   </div>
                 </div>

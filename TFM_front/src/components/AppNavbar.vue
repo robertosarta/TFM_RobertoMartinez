@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar">
     <div class="navbar__brand">
-      <RouterLink to="/" class="navbar__link" @click="goHome">Bodas</RouterLink>
+      <RouterLink to="/" class="navbar__link navbar__logo-link" @click="goHome">
+        <img src="/favicon.png" alt="Mi Boda" class="navbar__logo" />
+      </RouterLink>
     </div>
 
     <div class="navbar__links">
@@ -35,7 +37,15 @@ const handleLogout = async () => {
 }
 
 const goHome = () => {
+  const isHome = router.currentRoute.value?.path === '/'
+
+  if (isHome) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+
   router.push('/').catch(() => {})
   window.dispatchEvent(new CustomEvent('reset-home-filters'))
+  requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
 }
 </script>

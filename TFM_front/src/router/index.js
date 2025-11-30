@@ -6,11 +6,13 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ServiceDetailView from '../views/ServiceDetailView.vue'
+import AboutView from '../views/AboutView.vue'
 
 const routes = [
   { path: '/', component: HomeView },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
+  { path: '/quienes-somos', component: AboutView },
   { path: '/services/:id', component: ServiceDetailView },
   {
     path: '/profile',
