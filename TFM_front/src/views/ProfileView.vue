@@ -728,7 +728,9 @@ const syncWeddingEdit = (data) => {
   }
   weddingEdit.guest_count = data.guest_count ?? ''
   weddingEdit.status = data.status ?? ''
-    weddingEdit.wedding_date = data.wedding_date ?? ''
+  weddingEdit.wedding_date = data.wedding_date 
+    ? data.wedding_date.slice(0,10)
+    :''
 }
 
 const fetchWeddingDetail = async (weddingId) => {
@@ -779,7 +781,9 @@ const createWedding = async () => {
     const payload = cleanPayload({
       name: 'Mi boda',
       status: weddingEdit.status || 'gestionando',
-      wedding_date: weddingEdit.wedding_date || null,
+      wedding_date: weddingEdit.wedding_date
+      ? weddingEdit.wedding_date.slice(0,10)
+      : null,
       guest_count: weddingEdit.guest_count === '' ? null : weddingEdit.guest_count,
     })
     const res = await api.post('/weddings', payload)
@@ -805,7 +809,9 @@ const updateWedding = async () => {
   const payload = cleanPayload({
     guest_count: weddingEdit.guest_count === '' ? null : weddingEdit.guest_count,
     status: weddingEdit.status,
-    wedding_date: weddingEdit.wedding_date || null,
+    wedding_date: weddingEdit.wedding_date
+      ? weddingEdit.wedding_date.slice(0,10)
+      : null,
   })
   if (!Object.keys(payload).length) {
     weddingLoading.value = false
@@ -882,12 +888,7 @@ const weddingTotal = computed(() => {
 // Utilidades
 // -----------------------------
 const euro = (value) => `${Number(value ?? 0).toFixed(2)} €` //para formatear valores monetarios a euros
-const formatDate = (value) => {
-  if (!value) return ''
-  const d = new Date(value)
-  if (Number.isNaN(d)) return value
-  return d.toISOString().slice(0, 10)
-}
+const formatDate = (value) => value?.slice(0, 10) || ''
 
 const cleanPayload = (obj) =>
   Object.fromEntries(

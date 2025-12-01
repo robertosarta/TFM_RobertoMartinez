@@ -47,7 +47,7 @@ class Wedding extends Model
     ];
 
     protected $casts = [
-        'wedding_date' => 'date',
+        'wedding_date' => 'date:Y-m-d',
         'budget' => 'decimal:2',
         'guest_count' => 'integer',
     ];
