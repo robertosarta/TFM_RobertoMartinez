@@ -464,7 +464,7 @@
             </div>
 
             <div class="total">
-              Total estimado: {{ euro(weddingTotal) }}
+              Total confirmado: {{ euro(weddingTotal) }}
             </div>
           </div>
         </div>
