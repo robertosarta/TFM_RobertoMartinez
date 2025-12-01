@@ -262,13 +262,13 @@ class ServiceSeeder extends Seeder
                 'user_email' => 'catering@demo.com',
                 'images' => [
                     [
-                        'url' => 'https://images.unsplash.com/photo-1707333514156-d42751dca70d?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                        'caption' => 'Jardines de la masía',
+                        'url' => 'https://images.unsplash.com/photo-1658492988855-2a3f254f7710?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                        'caption' => 'Villa con jardines',
                         'is_primary' => true,
                     ],
                     [
-                        'url' => 'https://images.unsplash.com/photo-1544137171-9f5cf7b0fafa?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                        'caption' => 'Carpa para eventos',
+                        'url' => 'https://images.unsplash.com/photo-1592275788122-970c9583048a?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                        'caption' => 'Jardin',
                     ],
                 ],
             ],

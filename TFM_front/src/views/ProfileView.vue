@@ -199,6 +199,14 @@
                   <input v-model="serviceEdits[svc.id].name" type="text" class="form__input" />
                 </div>
                 <div class="form-row">
+                  <label>Email</label>
+                  <input v-model="serviceEdits[svc.id].email" type="email" class="form__input" />
+                </div>
+                <div class="form-row">
+                  <label>Teléfono</label>
+                  <input v-model="serviceEdits[svc.id].phone" type="text" class="form__input" />
+                </div>
+                <div class="form-row">
                   <label>Precios desde</label>
                   <div class="input-prefix">
                     <span class="input-prefix__symbol">€</span>
@@ -307,15 +315,38 @@
           <div v-if="weddingLoading" class="muted">Cargando boda...</div>
 
           <div v-else-if="!wedding">
-            <button class="btn btn--primary" @click="createWedding" :disabled="weddingLoading">
-              Crear mi boda
-            </button>
+            <div class="form mini-form">
+              <h4>Crear mi boda</h4>
+              <div class="form-row">
+                <label>Fecha de la boda</label>
+                <input v-model="weddingEdit.wedding_date" type="date" class="form__input" />
+              </div>
+              <div class="form-row">
+                <label>Estado</label>
+                <select v-model="weddingEdit.status" class="form__select">
+                  <option value="">(sin estado)</option>
+                  <option v-for="opt in weddingStatusOptions" :key="opt" :value="opt">
+                    {{ opt }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Número de invitados</label>
+                <input v-model.number="weddingEdit.guest_count" type="number" min="0" class="form__input" />
+              </div>
+              <div class="form-actions">
+                <button class="btn btn--primary btn--small" @click="createWedding" :disabled="weddingLoading">
+                  {{ weddingLoading ? 'Creando...' : 'Crear mi boda' }}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div v-else>
             <p class="muted">
               {{ wedding.name }} · Estado: {{ wedding.status }} · Invitados:
               {{ wedding.guest_count || '—' }}
+              <span v-if="wedding.wedding_date">· Fecha: {{ formatDate(wedding.wedding_date) }}</span>
             </p>
 
             <div class="wedding-meta">
@@ -344,6 +375,10 @@
                     min="0"
                     class="form__input"
                   />
+                </div>
+                <div class="form-row">
+                  <label>Fecha de la boda</label>
+                  <input v-model="weddingEdit.wedding_date" type="date" class="form__input" />
                 </div>
                 <div class="form-actions">
                   <button class="btn btn--primary btn--small" @click="updateWedding" :disabled="weddingLoading">
@@ -546,6 +581,8 @@ const fetchServices = async () => {
         price: svc.price,
         description: svc.description,
         subcategory_id: svc.subcategory_id,
+        email: svc.email,
+        phone: svc.phone,
       }
       imageUrls[svc.id] = ''
       imageFiles[svc.id] = null
@@ -667,7 +704,7 @@ const wedding = ref(null) // objeto boda completo
 const weddingLoading = ref(false) // estado de carga
 const weddingError = ref('') // mensaje de error
 const weddingUpdates = reactive({}) // cambios en pivots de servicios
-const weddingEdit = reactive({ guest_count: '', status: '' }) // ediciones de la boda
+const weddingEdit = reactive({ guest_count: '', status: '', wedding_date: '' }) // ediciones de la boda
 const serviceStatusOptions = ['consultado', 'confirmado', 'cancelado'] // opciones de estado
 const weddingStatusOptions = ['gestionando', 'planificada', 'confirmada', 'finalizada', 'cancelada']
 
@@ -686,10 +723,12 @@ const syncWeddingEdit = (data) => {
   if (!data) {
     weddingEdit.guest_count = ''
     weddingEdit.status = ''
+    weddingEdit.wedding_date = ''
     return
   }
   weddingEdit.guest_count = data.guest_count ?? ''
   weddingEdit.status = data.status ?? ''
+    weddingEdit.wedding_date = data.wedding_date ?? ''
 }
 
 const fetchWeddingDetail = async (weddingId) => {
@@ -737,7 +776,13 @@ const createWedding = async () => {
   weddingLoading.value = true
   weddingError.value = ''
   try {
-    const res = await api.post('/weddings', { name: 'Mi boda', status: 'gestionando' })
+    const payload = cleanPayload({
+      name: 'Mi boda',
+      status: weddingEdit.status || 'gestionando',
+      wedding_date: weddingEdit.wedding_date || null,
+      guest_count: weddingEdit.guest_count === '' ? null : weddingEdit.guest_count,
+    })
+    const res = await api.post('/weddings', payload)
     const newWeddingId = res.data?.data?.id
     if (newWeddingId) {
       await fetchWeddingDetail(newWeddingId)
@@ -760,6 +805,7 @@ const updateWedding = async () => {
   const payload = cleanPayload({
     guest_count: weddingEdit.guest_count === '' ? null : weddingEdit.guest_count,
     status: weddingEdit.status,
+    wedding_date: weddingEdit.wedding_date || null,
   })
   if (!Object.keys(payload).length) {
     weddingLoading.value = false
@@ -836,6 +882,12 @@ const weddingTotal = computed(() => {
 // Utilidades
 // -----------------------------
 const euro = (value) => `${Number(value ?? 0).toFixed(2)} €` //para formatear valores monetarios a euros
+const formatDate = (value) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d)) return value
+  return d.toISOString().slice(0, 10)
+}
 
 const cleanPayload = (obj) =>
   Object.fromEntries(
