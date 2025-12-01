@@ -94,5 +94,55 @@ class UserSeeder extends Seeder
             'address' => 'Rambla Jardín 21, Bilbao',
             'role' => 'business',
         ]);
+
+        User::create([
+            'name' => 'DJ Ritmo',
+            'email' => 'dj@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('dj12345'),
+            'phone' => '600123987',
+            'address' => 'Av. Musica 10, Madrid',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Hotel Mirador',
+            'email' => 'hotel@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('hotel123'),
+            'phone' => '600555777',
+            'address' => 'Paseo Mar 50, Malaga',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Flora Urbana',
+            'email' => 'decor@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('flora123'),
+            'phone' => '600888999',
+            'address' => 'Calle Verde 8, Valencia',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Sounds Deluxe',
+            'email' => 'dj2@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('djdeluxe123'),
+            'phone' => '600222333',
+            'address' => 'Calle Ritmo 22, Madrid',
+            'role' => 'business',
+        ]);
+
+        User::create([
+            'name' => 'Bridal Dreams',
+            'email' => 'bridal@demo.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('bridal123'),
+            'phone' => '600444555',
+            'address' => 'Av. Estilo 9, Barcelona',
+            'role' => 'business',
+        ]);
     }
 }

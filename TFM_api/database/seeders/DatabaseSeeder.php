@@ -10,6 +10,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\SubcategorySeeder;
 use Database\Seeders\ServiceSeeder;
+use Database\Seeders\ReviewSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubcategorySeeder::class,
             ServiceSeeder::class,
+            ReviewSeeder::class,
         ]);
 
         User::factory(5)->create();
