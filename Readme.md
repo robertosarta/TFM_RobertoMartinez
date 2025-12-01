@@ -67,72 +67,188 @@ Instalar en tu máquina:
 -PHP 8.2+
 -Composer Última versión
 -Git Para clonar
--MySQL / MariaDB Se recomienda XAMPP
+🎉 MiBoda — Plataforma de gestión de bodas
 
----------✔️ 2. Backend — Laravel (TFM_api)---------------
-Clonar repositorio:
-  -> git clone https://github.com/robertosarta/TFM_RobertoMartinez.git
+TFM Full-Stack Developer · Proyecto final
 
-Configurar .env:
-  -> cd TFM_api
-  -> cp .env.example .env
+Una plataforma completa para organizar bodas, gestionar proveedores, servicios, reservas y seguimiento del evento.
+Construida como TFM siguiendo buenas prácticas modernas de arquitectura.
+
+🚀 Características principales
+🛠️ Backend — Laravel 11 (API REST)
+
+Autenticación con Sanctum (Bearer tokens)
+
+CRUD completo de:
+
+Usuarios (roles: admin, user, business)
+
+Servicios + imágenes
+
+Categorías y subcategorías
+
+Bodas del usuario + servicios asociados (pivot con precio, cantidad, estado…)
+
+Reviews y comentarios
+
+Relaciones Eloquent optimizadas (eager loading)
+
+Validaciones robustas (confirmed, unique, FormRequest…)
+
+Seeders completos con datos reales
+
+Documentación Swagger (L5-Swagger)
+
+🎨 Frontend — Vue 3 + Vite
+
+SPA moderna con:
+
+Vue Router
+
+Pinia (store de auth + token + user)
+
+Axios con interceptores (Bearer token automático)
+
+Filtros dinámicos por categoría/subcategoría
+
+Carousels de imágenes
+
+Gestión completa de la boda del usuario
+
+Formularios reactivos y validados
+
+Estilos propios con metodología BEM
+
+🗄️ Base de datos — MySQL/MariaDB
+
+Tablas principales:
+
+users
+services
+service_images
+reviews
+categories
+subcategories
+weddings
+wedding_service   (pivot: price, quantity, status)
+personal_access_tokens
 
 
-Editar los valores:
-  APP_NAME=MiBoda
-  APP_KEY=
+Migraciones & seeders incluidos.
 
-  DB_CONNECTION=mysql
-  DB_HOST=127.0.0.1
-  DB_PORT=3306
-  DB_DATABASE=tfm
-  DB_USERNAME=root
-  DB_PASSWORD=
+🧱 Arquitectura del proyecto
+TFM_root/
+│
+├── TFM_api/                # Backend Laravel
+│   ├── app/
+│   ├── routes/api.php
+│   ├── database/migrations
+│   ├── database/seeders
+│   ├── .env
+│   └── ...
+│
+└── TFM_front/              # Frontend Vue 3 + Vite
+    ├── src/
+    ├── src/stores/auth.js
+    ├── src/api/axios.js
+    ├── src/views/
+    ├── .env
+    └── ...
+
+📦 Instalación completa
+
+Apto para cualquier PC limpio: solo requiere Git + Node + PHP + Composer + MySQL.
+
+✔️ 1. Requisitos previos
+
+Instalar:
+
+Node.js 20+
+
+PHP 8.2+
+
+Composer
+
+Git
+
+MySQL/MariaDB (recomendado XAMPP)
+
+✔️ 2. Backend — Laravel (TFM_api)
+Clonar repositorio
+git clone https://github.com/robertosarta/TFM_RobertoMartinez.git
+
+Configurar entorno
+cd TFM_api
+cp .env.example .env
+
+
+Editar:
+
+APP_NAME=MiBoda
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tfm
+DB_USERNAME=root
+DB_PASSWORD=
+
 
 ⚠️ Si usas XAMPP:
--Usuario: root
--Password: (vacío)
 
-Crear la base de datos:
-En phpMyAdmin o consola MySQL:
-  -> CREATE DATABASE tfm DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+Usuario: root
 
-Instalar dependencias:
-  -> composer install
+Password: (vacío)
 
-Generar APP_KEY:
-  -> php artisan key:generate
+Crear base de datos
 
-Migrar + seeders
-  -> php artisan migrate --seed
+En phpMyAdmin o MySQL:
 
-Ejecutar servidor:
-  -> php artisan serve --host=localhost --port=8000
-
-
-La API estará disponible en:
-
-http://localhost:8000/api
-
----------✔️ 3. Frontend — Vue 3 (TFM_front)---------------
-Crear archivo .env
-En TFM_front/.env, añadir:
-  -> VITE_API_BASE_URL=http://localhost:8000/api
+CREATE DATABASE tfm
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
 
 Instalar dependencias
-  -> cd TFM_front
-  -> npm install
+composer install
 
-Iniciar el servidor de desarrollo
-  -> npm run dev
+Generar APP_KEY
+php artisan key:generate
+
+Migrar + seeders
+php artisan migrate --seed
+
+Levantar servidor
+php artisan serve --host=localhost --port=8000
 
 
-La web se abrirá en:
+La API queda en:
 
-http://localhost:5173
+👉 http://localhost:8000/api
+
+✔️ 3. Frontend — Vue 3 (TFM_front)
+Crear archivo .env
+
+En TFM_front/.env:
+
+VITE_API_BASE_URL=http://localhost:8000/api
+
+Instalar dependencias
+cd TFM_front
+npm install
+
+Levantar en desarrollo
+npm run dev
 
 
-........-🤝 Autor-............
+Frontend accesible en:
+
+👉 http://localhost:5173
+
+👤 Autor
+
 Roberto Martínez
 TFM — Máster Full-Stack Developer
 EBIS Business School
+
+📝 Licencia
+
+Uso académico para TFM.
