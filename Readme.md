@@ -1,72 +1,3 @@
-Una plataforma completa para gestionar bodas, servicios, proveedores y reservas.
-Construida como TFM del Máster Full-Stack Developer, siguiendo buenas prácticas modernas de arquitectura.
-
-
--Características principales-
-
-........-🛠️Backend – Laravel 11 (API REST)-............
--Autenticación con Sanctum (Bearer tokens)
--CRUD completo de:
-  -Usuarios (roles: admin, user, business)
-  -Servicios + imágenes
-  -Categorías y subcategorías
-  -Bodas del usuario + servicios asociados (pivot con precio, cantidad y estado)
-  -Reviews/comentarios
--Relaciones Eloquent optimizadas con eager loading
--Validación robusta (FormRequest, confirmed, unique, etc.)
--Seeders y datos de ejemplo listos para usar
--Documentación Swagger (L5-Swagger)
-
-
-........-🎨 Frontend – Vue 3 + Vite-............
--SPA moderna con:
-  -Vue Router
-  -Pinia (auth store + token + user data)
-  -Axios con interceptores (incluye el Bearer token automáticamente)
-  -Filtros dinámicos por categoría/subcategoría
-  -Carousels de imágenes
-  -Gestión de la boda del usuario
-  -Formularios reactivos y validaciones
--Estilos propios con metodología BEM
-
-
-........-🗄️ Base de Datos – MySQL/MariaDB-............
--Tablas:
-  users, services, service_images, reviews, categories, subcategories,
-  weddings, wedding_service (pivot), personal_access_tokens.
--Migraciones y seeders incluidos.
-
-
-........-🧱 Arquitectura del proyecto-............
-TFM_root/
-│
-├─ TFM_api/               # Backend Laravel
-│   ├─ app/
-│   ├─ routes/api.php
-│   ├─ database/migrations
-│   ├─ database/seeders
-│   ├─ .env
-│   └─ ...
-│
-└─ TFM_front/             # Frontend Vue 3 + Vite
-    ├─ src/
-    ├─ src/stores/auth.js
-    ├─ src/api/axios.js
-    ├─ src/views/
-    ├─ .env
-    └─ ...
-
-
-........-🚀 Instalación completa-............
-Apto para cualquier PC limpio, solo requiere Git + Node + PHP + Composer + MySQL.
-
----------✔️ 1. Requisitos previos---------------
-Instalar en tu máquina:
-
--Node.js 20+
--PHP 8.2+
--Composer Última versión
--Git Para clonar
 🎉 MiBoda — Plataforma de gestión de bodas
 
 TFM Full-Stack Developer · Proyecto final
@@ -81,48 +12,45 @@ Autenticación con Sanctum (Bearer tokens)
 
 CRUD completo de:
 
-Usuarios (roles: admin, user, business)
+Usuarios (admin, user, business)
 
 Servicios + imágenes
 
 Categorías y subcategorías
 
-Bodas del usuario + servicios asociados (pivot con precio, cantidad, estado…)
+Bodas del usuario + servicios asociados (pivot con precio, cantidad y estado)
 
 Reviews y comentarios
 
-Relaciones Eloquent optimizadas (eager loading)
+Eloquent con eager loading
 
-Validaciones robustas (confirmed, unique, FormRequest…)
+Validaciones potentes
 
-Seeders completos con datos reales
+Seeders completos
 
 Documentación Swagger (L5-Swagger)
 
 🎨 Frontend — Vue 3 + Vite
 
-SPA moderna con:
+SPA con:
 
 Vue Router
 
-Pinia (store de auth + token + user)
+Pinia
 
-Axios con interceptores (Bearer token automático)
+Axios con interceptores (Bearer automático)
 
-Filtros dinámicos por categoría/subcategoría
+Filtros dinámicos
 
-Carousels de imágenes
+Carousels
 
 Gestión completa de la boda del usuario
 
-Formularios reactivos y validados
+Formularios reactivos
 
 Estilos propios con metodología BEM
 
-🗄️ Base de datos — MySQL/MariaDB
-
-Tablas principales:
-
+🗄️ Base de Datos — MySQL/MariaDB
 users
 services
 service_images
@@ -130,24 +58,20 @@ reviews
 categories
 subcategories
 weddings
-wedding_service   (pivot: price, quantity, status)
+wedding_service   (pivot)
 personal_access_tokens
-
-
-Migraciones & seeders incluidos.
 
 🧱 Arquitectura del proyecto
 TFM_root/
 │
-├── TFM_api/                # Backend Laravel
+├── TFM_api/       # Backend Laravel
 │   ├── app/
+│   ├── database/
 │   ├── routes/api.php
-│   ├── database/migrations
-│   ├── database/seeders
 │   ├── .env
 │   └── ...
 │
-└── TFM_front/              # Frontend Vue 3 + Vite
+└── TFM_front/     # Frontend Vue 3 + Vite
     ├── src/
     ├── src/stores/auth.js
     ├── src/api/axios.js
@@ -156,12 +80,7 @@ TFM_root/
     └── ...
 
 📦 Instalación completa
-
-Apto para cualquier PC limpio: solo requiere Git + Node + PHP + Composer + MySQL.
-
 ✔️ 1. Requisitos previos
-
-Instalar:
 
 Node.js 20+
 
@@ -171,7 +90,7 @@ Composer
 
 Git
 
-MySQL/MariaDB (recomendado XAMPP)
+MySQL/MariaDB (XAMPP recomendado)
 
 ✔️ 2. Backend — Laravel (TFM_api)
 Clonar repositorio
@@ -185,6 +104,7 @@ cp .env.example .env
 Editar:
 
 APP_NAME=MiBoda
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -193,54 +113,51 @@ DB_USERNAME=root
 DB_PASSWORD=
 
 
-⚠️ Si usas XAMPP:
+Crear la BD:
 
-Usuario: root
+CREATE DATABASE tfm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-Password: (vacío)
 
-Crear base de datos
+Instalar dependencias:
 
-En phpMyAdmin o MySQL:
-
-CREATE DATABASE tfm
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-Instalar dependencias
 composer install
 
-Generar APP_KEY
+
+Generar key:
+
 php artisan key:generate
 
-Migrar + seeders
+
+Migrar + seed:
+
 php artisan migrate --seed
 
-Levantar servidor
+
+Servidor:
+
 php artisan serve --host=localhost --port=8000
 
 
-La API queda en:
-
+API disponible en:
 👉 http://localhost:8000/api
 
 ✔️ 3. Frontend — Vue 3 (TFM_front)
 Crear archivo .env
-
-En TFM_front/.env:
-
 VITE_API_BASE_URL=http://localhost:8000/api
 
-Instalar dependencias
+
+Instalar dependencias:
+
 cd TFM_front
 npm install
 
-Levantar en desarrollo
+
+Iniciar:
+
 npm run dev
 
 
-Frontend accesible en:
-
+Frontend:
 👉 http://localhost:5173
 
 👤 Autor
@@ -248,7 +165,3 @@ Frontend accesible en:
 Roberto Martínez
 TFM — Máster Full-Stack Developer
 EBIS Business School
-
-📝 Licencia
-
-Uso académico para TFM.
