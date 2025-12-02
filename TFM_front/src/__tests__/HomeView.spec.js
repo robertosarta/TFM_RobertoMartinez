@@ -3,6 +3,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HomeView from '../views/HomeView.vue'
 
+const mockGet = vi.hoisted(() => vi.fn())
+
 vi.mock('vue-router', () => {
   const route = { path: '/', params: {}, fullPath: '/' }
   const router = { push: vi.fn(), currentRoute: { value: { path: '/' } } }
@@ -15,29 +17,6 @@ vi.mock('vue-router', () => {
   }
 })
 
-const mockGet = vi.fn((url) => {
-  if (url === '/categories') {
-    return Promise.resolve({ data: { data: [{ id: 1, name: 'Foto' }] } })
-  }
-  if (url === '/subcategories') {
-    return Promise.resolve({
-      data: { data: [{ id: 10, name: 'Drone', category_id: 1 }] },
-    })
-  }
-  if (url === '/services') {
-    return Promise.resolve({
-      data: {
-        data: {
-          data: [
-            { id: 100, name: 'Drone Pro', description: 'Video', price: 99, subcategory_id: 10, images: [] },
-          ],
-        },
-      },
-    })
-  }
-  return Promise.resolve({ data: {} })
-})
-
 vi.mock('../api/axios', () => ({
   default: {
     get: mockGet,
@@ -48,6 +27,28 @@ describe('HomeView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     mockGet.mockClear()
+    mockGet.mockImplementation((url) => {
+      if (url === '/categories') {
+        return Promise.resolve({ data: { data: [{ id: 1, name: 'Foto' }] } })
+      }
+      if (url === '/subcategories') {
+        return Promise.resolve({
+          data: { data: [{ id: 10, name: 'Drone', category_id: 1 }] },
+        })
+      }
+      if (url === '/services') {
+        return Promise.resolve({
+          data: {
+            data: {
+              data: [
+                { id: 100, name: 'Drone Pro', description: 'Video', price: 99, subcategory_id: 10, images: [] },
+              ],
+            },
+          },
+        })
+      }
+      return Promise.resolve({ data: {} })
+    })
   })
 
   it('renders categories and filters by category on click', async () => {
