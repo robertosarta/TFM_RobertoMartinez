@@ -16,17 +16,13 @@ class PasswordUpdateTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->put('/password', [
-                'current_password' => 'password',
+            ->actingAs($user, 'sanctum')
+            ->putJson("/api/users/{$user->id}", [
                 'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        $response->assertStatus(200);
 
         $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
     }
@@ -36,16 +32,12 @@ class PasswordUpdateTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->put('/password', [
-                'current_password' => 'wrong-password',
+            ->actingAs($user, 'sanctum')
+            ->putJson("/api/users/{$user->id}", [
                 'password' => 'new-password',
-                'password_confirmation' => 'new-password',
+                'password_confirmation' => 'different',
             ]);
 
-        $response
-            ->assertSessionHasErrorsIn('updatePassword', 'current_password')
-            ->assertRedirect('/profile');
+        $response->assertStatus(422);
     }
 }

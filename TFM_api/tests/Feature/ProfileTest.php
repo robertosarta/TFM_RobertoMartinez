@@ -4,96 +4,59 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    public function test_user_can_update_own_profile_via_api(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'name' => 'Old Name',
+            'phone' => '111',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->get('/profile');
+        Sanctum::actingAs($user);
 
-        $response->assertOk();
-    }
-
-    public function test_profile_information_can_be_updated(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
+        $response = $this->putJson("/api/users/{$user->id}", [
+            'name' => 'New Name',
+            'phone' => '222333444',
+        ]);
 
         $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertOk()
+            ->assertJsonPath('data.name', 'New Name')
+            ->assertJsonPath('data.phone', '222333444');
 
-        $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'New Name',
+            'phone' => '222333444',
+        ]);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    public function test_user_cannot_update_other_user_profile(): void
     {
-        $user = User::factory()->create();
+        [$owner, $other] = User::factory()->count(2)->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
+        Sanctum::actingAs($owner);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        $response = $this->putJson("/api/users/{$other->id}", [
+            'name' => 'Hacked',
+        ]);
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
+        $response->assertStatus(403);
     }
 
-    public function test_user_can_delete_their_account(): void
+    public function test_empty_payload_returns_422(): void
     {
         $user = User::factory()->create();
+        Sanctum::actingAs($user);
 
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
+        $response = $this->putJson("/api/users/{$user->id}", []);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
+        $response->assertStatus(422);
     }
 }
